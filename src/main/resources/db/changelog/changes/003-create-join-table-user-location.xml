@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.30.xsd">
+
+    <changeSet id="003-create-join-table-user-location.xml" author="vladshi">
+
+        <createTable tableName="user_location">
+
+            <column name="user_id" type="int">
+                <constraints foreignKeyName="user_id_location_id"
+                             references="user(id)"
+                             deleteCascade="true"/>
+            </column>
+
+            <column name="location_id" type="int">
+                <constraints foreignKeyName="location_id_user_id"
+                             references="location(id)"
+                             deleteCascade="true"/>
+            </column>
+
+        </createTable>
+
+        <addUniqueConstraint tableName="user_location" columnNames="location_id, user_id"/>
+
+    </changeSet>
+
+</databaseChangeLog>

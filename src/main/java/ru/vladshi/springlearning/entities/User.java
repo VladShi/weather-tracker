@@ -25,7 +25,7 @@ public class User {
     private String login;
 
     @Column(name = "password", nullable = false)
-    @Size(min = 8, max = 20, message = "Login should be between 8 and 20 characters")
+    @Size(min = 8, max = 20, message = "Password should be between 8 and 20 characters")
     @NotNull(message = "Password is required")
     private String password;
 

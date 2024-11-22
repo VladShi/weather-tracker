@@ -19,8 +19,9 @@
 
             <column name="user_id" type="int">
                 <constraints foreignKeyName="session_user_id"
-                             references="user(id)"
+                             references="user_table(id)"
                              deleteCascade="true"
+                             unique="true"
                              nullable="false"/>
             </column>
 

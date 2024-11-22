@@ -5,7 +5,15 @@
     <title>index page</title>
 </head>
 <body>
-<p><a th:href="@{/login}">Login</a></p>
-<p><a th:href="@{/register}">Register</a></p>
+<div th:if="${userSessionOptional.isEmpty()}">
+    <!-- Блок для отображения ссылок на регистрацию и аутентификацию -->
+    <h1>Welcome!</h1>
+    <p>Please <a th:href="@{/login}">log in</a> or <a th:href="@{/register}">register</a> to continue.</p>
+</div>
+<div th:if="${userSessionOptional.isPresent()}">
+    <div th:with="userLogin=${userSessionOptional.get().getUser().getLogin()}">
+        Привет, <span th:text="${userLogin}"/>. <a th:href="@{/logout}">log out</a>
+    </div>
+</div>
 </body>
 </html>

@@ -11,7 +11,7 @@
 
             <column name="user_id" type="int">
                 <constraints foreignKeyName="user_id_location_id"
-                             references="user(id)"
+                             references="user_table(id)"
                              deleteCascade="true"/>
             </column>
 

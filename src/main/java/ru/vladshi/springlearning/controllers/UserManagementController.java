@@ -42,6 +42,8 @@ public class UserManagementController extends BaseController {
                                HttpServletResponse response) {
 
         if (isUserAuthenticated(sessionId)) {
+            // TODO сделать метод типа checkAuthentication() который будет выкидывать исключение, типа
+            //  UserAlreadyAuth..(). И потом в глобальном обработчике отлавливать и перенаправлять.
             return "redirect:/";
         }
 

@@ -54,7 +54,7 @@ public class UserManagementServiceImpl implements UserManagementService {
 
         userDao.save(userToSave);
 
-        UserSession userSession = userSessionsService.findOrCreate(userToSave);
+        UserSession userSession = userSessionsService.findOrCreate(userToSave); // TODO Нарушение SRP , создание сессии нужно вынести. Например, в контролере есть метод setCookie, можно туда перенести попробовать. Но в случае register() не забыть что нужно передать id из хэшированного юзера в запрашиваемого!
 
         return userSession.getId();
     }

@@ -7,7 +7,5 @@ public interface UserManagementService {
 
     String logIn(User user);
 
-    void register(User user);
-
-    boolean isLoginTaken(String login);
+    String register(User user);
 }

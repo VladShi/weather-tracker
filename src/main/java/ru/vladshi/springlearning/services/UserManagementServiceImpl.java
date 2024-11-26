@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.vladshi.springlearning.dao.UserDao;
 import ru.vladshi.springlearning.entities.User;
 import ru.vladshi.springlearning.entities.UserSession;
+import ru.vladshi.springlearning.exceptions.UserAlreadyExistsException;
 
 import java.util.Optional;
 
@@ -45,22 +46,36 @@ public class UserManagementServiceImpl implements UserManagementService {
     }
 
     @Override
-    public void register(User user) {
-        hashPassword(user);
-        userDao.save(user);
+    public String register(User user) {
+        if (isLoginTaken(user.getLogin())) {
+            throw new UserAlreadyExistsException("User with login " + user.getLogin() + " already exists");
+        }
+
+        User userToSave = createUserCopyWithHashedPassword(user);
+
+        userDao.save(userToSave);
+
+        UserSession userSession = userSessionsService.findOrCreate(userToSave);
+
+        return userSession.getId();
     }
 
-    @Override
-    public boolean isLoginTaken(String login) {
+    private User createUserCopyWithHashedPassword(User originalUser) {
+        User hashedUser = new User();
+        hashedUser.setLogin(originalUser.getLogin());
+        hashedUser.setLocations(originalUser.getLocations());
+
+        String hashedPassword = BCrypt.hashpw(originalUser.getPassword(), BCrypt.gensalt());
+        hashedUser.setPassword(hashedPassword);
+
+        return hashedUser;
+    }
+
+    private boolean isLoginTaken(String login) {
         return userDao.findByLogin(login).isPresent();
     }
 
     private boolean checkPasswords(String plainPassword, String hashedPassword) {
         return BCrypt.checkpw(plainPassword, hashedPassword);
-    }
-
-    private void hashPassword(User user){
-        String hashedPassword = BCrypt.hashpw(user.getPassword(), BCrypt.gensalt());
-        user.setPassword(hashedPassword);
     }
 }

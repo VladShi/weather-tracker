@@ -32,15 +32,15 @@ public class UserManagementController extends BaseController {
     }
 
     @GetMapping("/register")
-    public String showRegisterForm(@CookieValue(value = SESSION_ID_NAME, required = false) String sessionId,
+    public String showRegisterForm(@CookieValue(value = SESSION_COOKIE_NAME, required = false) String sessionId,
                                    @ModelAttribute("user") User user) {
         return isUserAuthenticated(sessionId) ? "redirect:/" : "register";
     }
 
     @PostMapping("/register")
-    public String registerUser(@CookieValue(value = SESSION_ID_NAME, required = false) String sessionId,
-                               @ModelAttribute("user") @Valid User user, BindingResult bindingResult,
-                               HttpServletResponse response) {
+    public String registerUser(@CookieValue(value = SESSION_COOKIE_NAME, required = false) String sessionId,
+                               @ModelAttribute("user") @Valid User user,
+                               BindingResult bindingResult) {
 
         if (isUserAuthenticated(sessionId)) {
             return "redirect:/";
@@ -57,13 +57,13 @@ public class UserManagementController extends BaseController {
     }
 
     @GetMapping("/login")
-    public String showLoginForm(@CookieValue(value = SESSION_ID_NAME, required = false) String sessionId,
+    public String showLoginForm(@CookieValue(value = SESSION_COOKIE_NAME, required = false) String sessionId,
                                 @ModelAttribute("user") User user) {
         return isUserAuthenticated(sessionId) ? "redirect:/" : "login";
     }
 
     @PostMapping("/login")
-    public String loginUser(@CookieValue(value = SESSION_ID_NAME, required = false) String sessionId,
+    public String loginUser(@CookieValue(value = SESSION_COOKIE_NAME, required = false) String sessionId,
                             @ModelAttribute("user") @Valid User user, BindingResult bindingResult,
                             HttpServletResponse response) {
 
@@ -81,21 +81,22 @@ public class UserManagementController extends BaseController {
             return "login";
         }
 
-        Cookie sessionIdCookie = buildSessionIdCookie(SESSION_ID_NAME, sessionId);
+        Cookie sessionIdCookie = buildSessionCookie(SESSION_COOKIE_NAME, sessionId);
         response.addCookie(sessionIdCookie);
 
         return "redirect:/";
     }
 
     @GetMapping("/logout")
-    public String logout(@CookieValue(value = SESSION_ID_NAME, required = false) String sessionId,
+    public String logout(@CookieValue(value = SESSION_COOKIE_NAME, required = false) String sessionId,
                          HttpServletResponse response) {
 
         if (!isUserAuthenticated(sessionId)) {
             return "redirect:/";
         }
 
-        userManagementService.logOut(SESSION_ID_NAME, response);
+        Cookie clearedSessionCookie = clearSessionCookie(SESSION_COOKIE_NAME);
+        response.addCookie(clearedSessionCookie);
 
         return "redirect:/";
     }
@@ -104,11 +105,19 @@ public class UserManagementController extends BaseController {
         return userSessionsService.getUserSession(sessionId).isPresent();
     }
 
-    private Cookie buildSessionIdCookie(String name, String value) {
-        Cookie sessionIdCookie = new Cookie(name, value);
+    private Cookie buildSessionCookie(String cookieName, String value) {
+        Cookie sessionIdCookie = new Cookie(cookieName, value);
         sessionIdCookie.setPath("/");
         sessionIdCookie.setMaxAge(60 * 60 * 24);  // TODO константу сколько время хранится куки на стороне юзера
         sessionIdCookie.setHttpOnly(true);
         return sessionIdCookie;
+    }
+
+    private Cookie clearSessionCookie(String cookieName) {
+        Cookie cookie = new Cookie(cookieName, null);
+        cookie.setPath("/");
+        cookie.setMaxAge(0);
+        cookie.setHttpOnly(true);
+        return cookie;
     }
 }

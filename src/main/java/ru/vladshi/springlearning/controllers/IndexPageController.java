@@ -23,7 +23,7 @@ public class IndexPageController extends BaseController {
     }
 
     @GetMapping("/")
-    public String index(@CookieValue(value = SESSION_ID_NAME, required = false) String sessionId, Model model) {
+    public String index(@CookieValue(value = SESSION_COOKIE_NAME, required = false) String sessionId, Model model) {
         Optional<UserSession> userSessionOptional = userSessionsService.getUserSession(sessionId);
         model.addAttribute("userSessionOptional", userSessionOptional);
         // показать инфо пользователя

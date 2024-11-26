@@ -1,7 +1,5 @@
 package ru.vladshi.springlearning.services;
 
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletResponse;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -44,14 +42,6 @@ public class UserManagementServiceImpl implements UserManagementService {
         UserSession userSession = userSessionsService.findOrCreate(existingUser);
 
         return userSession.getId();
-    }
-
-    @Override
-    public void logOut(String sessionIdName, HttpServletResponse response) {
-        Cookie cookie = new Cookie(sessionIdName, null);
-        cookie.setPath("/");
-        cookie.setMaxAge(0);
-        response.addCookie(cookie);
     }
 
     @Override

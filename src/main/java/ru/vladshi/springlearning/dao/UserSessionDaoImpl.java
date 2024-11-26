@@ -29,6 +29,7 @@ public class UserSessionDaoImpl implements UserSessionDao {
     public void delete(UserSession userSession) {
         Session session = sessionFactory.getCurrentSession();
         session.remove(userSession);
+        session.flush();
     }
 
     @Override

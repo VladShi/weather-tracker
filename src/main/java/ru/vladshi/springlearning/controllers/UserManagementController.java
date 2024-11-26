@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import ru.vladshi.springlearning.entities.User;
+import ru.vladshi.springlearning.exceptions.InvalidCredentialsException;
 import ru.vladshi.springlearning.exceptions.UserAlreadyExistsException;
 import ru.vladshi.springlearning.services.UserManagementService;
 import ru.vladshi.springlearning.services.UserSessionsService;
@@ -83,9 +84,10 @@ public class UserManagementController extends BaseController {
             return "login";
         }
 
-        sessionId = userManagementService.logIn(user);
-        if (sessionId.isEmpty()) {
-            bindingResult.rejectValue("login", "error.login", "Incorrect login or password");
+        try {
+            sessionId = userManagementService.logIn(user);
+        } catch (InvalidCredentialsException ex) {
+            bindingResult.rejectValue("login", "error.login", ex.getMessage());
             return "login";
         }
 

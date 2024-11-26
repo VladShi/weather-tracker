@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.vladshi.springlearning.dao.UserDao;
 import ru.vladshi.springlearning.entities.User;
 import ru.vladshi.springlearning.entities.UserSession;
+import ru.vladshi.springlearning.exceptions.InvalidCredentialsException;
 import ru.vladshi.springlearning.exceptions.UserAlreadyExistsException;
 
 import java.util.Optional;
@@ -30,14 +31,12 @@ public class UserManagementServiceImpl implements UserManagementService {
 
         Optional<User> existingUserOptional = userDao.findByLogin(requestedUser.getLogin());
         if (existingUserOptional.isEmpty()) {
-            return "";
+            throw new InvalidCredentialsException("User with login " + requestedUser.getLogin() + " not found");
         }
         User existingUser = existingUserOptional.get();
 
-        String hashedPassword = existingUser.getPassword();
-        String plainPassword = requestedUser.getPassword();
-        if (!checkPasswords(plainPassword, hashedPassword)) {
-            return "";
+        if (!checkPasswords(requestedUser, existingUser)) {
+            throw new InvalidCredentialsException("Invalid password for user " + requestedUser.getLogin());
         }
 
         UserSession userSession = userSessionsService.findOrCreate(existingUser);
@@ -75,7 +74,9 @@ public class UserManagementServiceImpl implements UserManagementService {
         return userDao.findByLogin(login).isPresent();
     }
 
-    private boolean checkPasswords(String plainPassword, String hashedPassword) {
+    private boolean checkPasswords(User requestedUser, User existingUser) {
+        String plainPassword = requestedUser.getPassword();
+        String hashedPassword = existingUser.getPassword();
         return BCrypt.checkpw(plainPassword, hashedPassword);
     }
 }

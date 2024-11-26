@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.vladshi.springlearning.dao.UserDao;
 import ru.vladshi.springlearning.entities.User;
-import ru.vladshi.springlearning.entities.UserSession;
 import ru.vladshi.springlearning.exceptions.InvalidCredentialsException;
 import ru.vladshi.springlearning.exceptions.UserAlreadyExistsException;
 
@@ -17,17 +16,14 @@ import java.util.Optional;
 public class UserManagementServiceImpl implements UserManagementService {
 
     private final UserDao userDao;
-    private final UserSessionsService userSessionsService;
 
     @Autowired
-    public UserManagementServiceImpl(UserDao userDao,
-                                     UserSessionsService userSessionsService) {
+    public UserManagementServiceImpl(UserDao userDao) {
         this.userDao = userDao;
-        this.userSessionsService = userSessionsService;
     }
 
     @Override
-    public String logIn(User requestedUser) {
+    public void logIn(User requestedUser) {
 
         Optional<User> existingUserOptional = userDao.findByLogin(requestedUser.getLogin());
         if (existingUserOptional.isEmpty()) {
@@ -39,13 +35,11 @@ public class UserManagementServiceImpl implements UserManagementService {
             throw new InvalidCredentialsException("Invalid password for user " + requestedUser.getLogin());
         }
 
-        UserSession userSession = userSessionsService.findOrCreate(existingUser);
-
-        return userSession.getId();
+        requestedUser.setId(existingUser.getId());
     }
 
     @Override
-    public String register(User user) {
+    public void register(User user) {
         if (isLoginTaken(user.getLogin())) {
             throw new UserAlreadyExistsException("User with login " + user.getLogin() + " already exists");
         }
@@ -54,9 +48,7 @@ public class UserManagementServiceImpl implements UserManagementService {
 
         userDao.save(userToSave);
 
-        UserSession userSession = userSessionsService.findOrCreate(userToSave); // TODO Нарушение SRP , создание сессии нужно вынести. Например, в контролере есть метод setCookie, можно туда перенести попробовать. Но в случае register() не забыть что нужно передать id из хэшированного юзера в запрашиваемого!
-
-        return userSession.getId();
+        user.setId(userToSave.getId());
     }
 
     private User createUserCopyWithHashedPassword(User originalUser) {

@@ -5,7 +5,7 @@ import ru.vladshi.springlearning.entities.User;
 
 public interface UserManagementService {
 
-    String logIn(User user);
+    void logIn(User user);
 
-    String register(User user);
+    void register(User user);
 }

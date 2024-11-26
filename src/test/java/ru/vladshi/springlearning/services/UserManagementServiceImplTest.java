@@ -13,11 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.vladshi.springlearning.config.WebConfig;
 import ru.vladshi.springlearning.dao.UserDaoImpl;
 import ru.vladshi.springlearning.entities.User;
-import ru.vladshi.springlearning.entities.UserSession;
 import ru.vladshi.springlearning.exceptions.InvalidCredentialsException;
 import ru.vladshi.springlearning.exceptions.UserAlreadyExistsException;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -117,7 +115,8 @@ class UserManagementServiceImplTest {
 
         // When & Then
         User wrongPasswordUser = createTestUser(TEST_LOGIN, "wrongPassword");
-        assertThrows(InvalidCredentialsException.class, () -> userManagementService.logIn(wrongPasswordUser));
+        assertThrows(InvalidCredentialsException.class,
+                () -> userManagementService.logIn(wrongPasswordUser));
 
         // Database check
         Session session = sessionFactory.getCurrentSession();
@@ -137,7 +136,7 @@ class UserManagementServiceImplTest {
         User user = createTestUser(TEST_LOGIN, TEST_PASSWORD);
 
         // When
-        String sessionId = userManagementService.register(user);
+        userManagementService.register(user);
 
         // Then
         Session session = sessionFactory.getCurrentSession();
@@ -149,36 +148,24 @@ class UserManagementServiceImplTest {
         assertNotNull(savedUser);
         assertEquals(TEST_LOGIN, savedUser.getLogin());
         assertNotEquals(TEST_PASSWORD, savedUser.getPassword(), "Password must be hashed");
-        assertNotNull(sessionId);
-
-        // Check session creation in the database
-        UserSession userSession = session.createQuery(
-                        "FROM UserSession WHERE id = :sessionId", UserSession.class)
-                .setParameter("sessionId", sessionId)
-                .uniqueResult();
-
-        assertNotNull(userSession);
-        assertEquals(savedUser, userSession.getUser());
     }
 
     @Test
-    public void testSuccessfulLoginCreatesSession() {
+    public void testSuccessfulLogin() {
         // Given
         User user = createTestUser(TEST_LOGIN, TEST_PASSWORD);
-        userManagementService.register(user);
 
-        // When
-        String sessionId = userManagementService.logIn(user);
+        User userToSave = new User();
+        String hashedPassword = BCrypt.hashpw(TEST_PASSWORD, BCrypt.gensalt());
+        userToSave.setLogin(TEST_LOGIN);
+        userToSave.setPassword(hashedPassword);
 
-        // Then
         Session session = sessionFactory.getCurrentSession();
-        UserSession savedSession = session.createQuery(
-                        "FROM UserSession WHERE id = :sessionId", UserSession.class)
-                .setParameter("sessionId", sessionId)
-                .uniqueResult();
+        session.persist(userToSave);
+        session.flush();
 
-        assertNotNull(savedSession);
-        assertEquals(user.getLogin(), savedSession.getUser().getLogin());
-        assertTrue(savedSession.getExpiresAt().isAfter(LocalDateTime.now()));
+        // When & Then
+        assertDoesNotThrow(() -> userManagementService.logIn(user), "User is not logged in");
+        assertNotEquals(0, user.getId(), "User id should not be zero, after logging in");
     }
 }

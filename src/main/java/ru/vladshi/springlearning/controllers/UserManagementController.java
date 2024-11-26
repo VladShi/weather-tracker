@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import ru.vladshi.springlearning.entities.User;
+import ru.vladshi.springlearning.entities.UserSession;
 import ru.vladshi.springlearning.exceptions.InvalidCredentialsException;
 import ru.vladshi.springlearning.exceptions.UserAlreadyExistsException;
 import ru.vladshi.springlearning.services.UserManagementService;
@@ -56,13 +57,13 @@ public class UserManagementController extends BaseController {
         }
 
         try {
-            sessionId = userManagementService.register(user);
+            userManagementService.register(user);
         } catch (UserAlreadyExistsException ex) {
             bindingResult.rejectValue("login", "error.login", ex.getMessage());
             return "register";
         }
 
-        setSessionCookie(response, sessionId);
+        setSessionCookie(user, response);
 
         return "redirect:/";
     }
@@ -87,20 +88,20 @@ public class UserManagementController extends BaseController {
         }
 
         try {
-            sessionId = userManagementService.logIn(user);
+            userManagementService.logIn(user);
         } catch (InvalidCredentialsException ex) {
             bindingResult.rejectValue("login", "error.login", ex.getMessage());
             return "login";
         }
 
-        setSessionCookie(response, sessionId);
+        setSessionCookie(user, response);
 
         return "redirect:/";
     }
 
     @GetMapping("/logout")
-    public String logout(@CookieValue(value = SESSION_COOKIE_NAME, required = false) String sessionId,
-                         HttpServletResponse response) {
+    public String logoutUser(@CookieValue(value = SESSION_COOKIE_NAME, required = false) String sessionId,
+                             HttpServletResponse response) {
 
         if (!isUserAuthenticated(sessionId)) {
             return "redirect:/";
@@ -115,8 +116,11 @@ public class UserManagementController extends BaseController {
         return userSessionsService.getUserSession(sessionId).isPresent();
     }
 
-    private void setSessionCookie(HttpServletResponse response, String sessionId) {
-        Cookie sessionCookie = new Cookie(SESSION_COOKIE_NAME, sessionId);
+    private void setSessionCookie(User user, HttpServletResponse response) {
+
+        UserSession userSession = userSessionsService.findOrCreate(user);
+
+        Cookie sessionCookie = new Cookie(SESSION_COOKIE_NAME, userSession.getId());
         sessionCookie.setPath("/");
         sessionCookie.setMaxAge(60 * 60 * 24);  // TODO константу сколько время хранится куки на стороне юзера
         sessionCookie.setHttpOnly(true);

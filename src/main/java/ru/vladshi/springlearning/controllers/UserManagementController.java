@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import ru.vladshi.springlearning.entities.User;
 import ru.vladshi.springlearning.entities.UserSession;
+import ru.vladshi.springlearning.exceptions.AccessToPageDeniedException;
 import ru.vladshi.springlearning.services.UserManagementService;
 import ru.vladshi.springlearning.services.UserSessionsService;
 import ru.vladshi.springlearning.Validators.UserValidator;
@@ -33,7 +34,9 @@ public class UserManagementController extends BaseController {
     @GetMapping("/register")
     public String showRegisterForm(@CookieValue(value = SESSION_COOKIE_NAME, required = false) String sessionId,
                                    @ModelAttribute("user") User user) {
-        return isUserAuthenticated(sessionId) ? "redirect:/" : "register";
+
+        checkUserIsNotAuthenticated(sessionId);
+        return "register";
     }
 
     @PostMapping("/register")
@@ -41,11 +44,7 @@ public class UserManagementController extends BaseController {
                                @ModelAttribute("user") User user,
                                HttpServletResponse response) {
 
-        if (isUserAuthenticated(sessionId)) {
-            // TODO сделать метод типа checkAuthentication() который будет выкидывать исключение, типа
-            //  UserAlreadyAuth..(). И потом в глобальном обработчике отлавливать и перенаправлять.
-            return "redirect:/";
-        }
+        checkUserIsNotAuthenticated(sessionId);
         userValidator.validateOnRegister(user);
         userManagementService.register(user);
         setSessionCookie(user, response);
@@ -56,7 +55,9 @@ public class UserManagementController extends BaseController {
     @GetMapping("/login")
     public String showLoginForm(@CookieValue(value = SESSION_COOKIE_NAME, required = false) String sessionId,
                                 @ModelAttribute("user") User user) {
-        return isUserAuthenticated(sessionId) ? "redirect:/" : "login";
+
+        checkUserIsNotAuthenticated(sessionId);
+        return "login";
     }
 
     @PostMapping("/login")
@@ -64,9 +65,7 @@ public class UserManagementController extends BaseController {
                             @ModelAttribute("user") User user,
                             HttpServletResponse response) {
 
-        if (isUserAuthenticated(sessionId)) {
-            return "redirect:/";
-        }
+        checkUserIsNotAuthenticated(sessionId);
         userValidator.validateOnLogIn(user);
         userManagementService.logIn(user);
         setSessionCookie(user, response);
@@ -78,16 +77,10 @@ public class UserManagementController extends BaseController {
     public String logoutUser(@CookieValue(value = SESSION_COOKIE_NAME, required = false) String sessionId,
                              HttpServletResponse response) {
 
-        if (!isUserAuthenticated(sessionId)) {
-            return "redirect:/";
-        }
+        checkUserIsAuthenticated(sessionId);
         clearSessionCookie(response);
 
         return "redirect:/";
-    }
-
-    private boolean isUserAuthenticated(String sessionId) {
-        return userSessionsService.getUserSession(sessionId).isPresent();
     }
 
     private void setSessionCookie(User user, HttpServletResponse response) {
@@ -109,5 +102,17 @@ public class UserManagementController extends BaseController {
         emptySessionCookie.setHttpOnly(true);
 
         response.addCookie(emptySessionCookie);
+    }
+
+    private void checkUserIsNotAuthenticated(String sessionId) {
+        if (userSessionsService.getUserSession(sessionId).isPresent()) {
+            throw new AccessToPageDeniedException("Access is denied to authenticated users.");
+        }
+    }
+
+    private void checkUserIsAuthenticated(String sessionId) {
+        if (userSessionsService.getUserSession(sessionId).isEmpty()) {
+            throw new AccessToPageDeniedException("Access is denied to non-authenticated users.");
+        }
     }
 }

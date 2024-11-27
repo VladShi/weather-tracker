@@ -8,6 +8,11 @@ import ru.vladshi.springlearning.entities.User;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(AccessToPageDeniedException.class)
+    public String handleAccessToPageDeniedException(AccessToPageDeniedException ex) {
+        return "redirect:/";
+    }
+
     @ExceptionHandler(UserAlreadyExistsException.class)
     public ModelAndView handleUserAlreadyExistsException(UserAlreadyExistsException ex) {
         return createModelAndViewForUser("register", ex.getMessage());

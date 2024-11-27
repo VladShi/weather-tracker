@@ -1,11 +1,11 @@
 package ru.vladshi.springlearning.Validators;
 
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import ru.vladshi.springlearning.entities.User;
 import ru.vladshi.springlearning.exceptions.UserValidationOnLogInException;
 import ru.vladshi.springlearning.exceptions.UserValidationOnRegisterException;
 
-@Service
+@Component
 public class UserValidator {
 
     private static final String REGISTER = "register";

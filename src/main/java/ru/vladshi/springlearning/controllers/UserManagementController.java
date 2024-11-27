@@ -15,6 +15,9 @@ import ru.vladshi.springlearning.services.UserManagementService;
 import ru.vladshi.springlearning.services.UserSessionsService;
 import ru.vladshi.springlearning.Validators.UserValidator;
 
+import static ru.vladshi.springlearning.constants.RouteConstants.*;
+import static ru.vladshi.springlearning.constants.ViewConstants.*;
+
 @Controller
 public class UserManagementController extends BaseController {
 
@@ -31,15 +34,15 @@ public class UserManagementController extends BaseController {
         this.userValidator = userValidator;
     }
 
-    @GetMapping("/register")
+    @GetMapping(REGISTER_ROUTE)
     public String showRegisterForm(@CookieValue(value = SESSION_COOKIE_NAME, required = false) String sessionId,
                                    @ModelAttribute("user") User user) {
 
         checkUserIsNotAuthenticated(sessionId);
-        return "register";
+        return REGISTER_VIEW;
     }
 
-    @PostMapping("/register")
+    @PostMapping(REGISTER_ROUTE)
     public String registerUser(@CookieValue(value = SESSION_COOKIE_NAME, required = false) String sessionId,
                                @ModelAttribute("user") User user,
                                HttpServletResponse response) {
@@ -49,18 +52,18 @@ public class UserManagementController extends BaseController {
         userManagementService.register(user);
         setSessionCookie(user, response);
 
-        return "redirect:/";
+        return REDIRECT_INDEX_PAGE;
     }
 
-    @GetMapping("/login")
+    @GetMapping(LOGIN_ROUTE)
     public String showLoginForm(@CookieValue(value = SESSION_COOKIE_NAME, required = false) String sessionId,
                                 @ModelAttribute("user") User user) {
 
         checkUserIsNotAuthenticated(sessionId);
-        return "login";
+        return LOGIN_VIEW;
     }
 
-    @PostMapping("/login")
+    @PostMapping(LOGIN_ROUTE)
     public String loginUser(@CookieValue(value = SESSION_COOKIE_NAME, required = false) String sessionId,
                             @ModelAttribute("user") User user,
                             HttpServletResponse response) {
@@ -70,17 +73,17 @@ public class UserManagementController extends BaseController {
         userManagementService.logIn(user);
         setSessionCookie(user, response);
 
-        return "redirect:/";
+        return REDIRECT_INDEX_PAGE;
     }
 
-    @GetMapping("/logout")
+    @GetMapping(LOGOUT_ROUTE)
     public String logoutUser(@CookieValue(value = SESSION_COOKIE_NAME, required = false) String sessionId,
                              HttpServletResponse response) {
 
         checkUserIsAuthenticated(sessionId);
         clearSessionCookie(response);
 
-        return "redirect:/";
+        return REDIRECT_INDEX_PAGE;
     }
 
     private void setSessionCookie(User user, HttpServletResponse response) {

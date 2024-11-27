@@ -11,8 +11,11 @@ import ru.vladshi.springlearning.services.UserSessionsService;
 
 import java.util.Optional;
 
+import static ru.vladshi.springlearning.constants.RouteConstants.*;
+import static ru.vladshi.springlearning.constants.ViewConstants.*;
+
 @Controller
-@RequestMapping("/")
+@RequestMapping(INDEX_PAGE_ROUTE)
 public class IndexPageController extends BaseController {
 
     private final UserSessionsService userSessionsService;
@@ -22,11 +25,11 @@ public class IndexPageController extends BaseController {
         this.userSessionsService = userSessionsService;
     }
 
-    @GetMapping("/")
+    @GetMapping()
     public String index(@CookieValue(value = SESSION_COOKIE_NAME, required = false) String sessionId, Model model) {
         Optional<UserSession> userSessionOptional = userSessionsService.getUserSession(sessionId);
         model.addAttribute("userSessionOptional", userSessionOptional);
         // показать инфо пользователя
-        return "index";
+        return INDEX_PAGE_VIEW;
     }
 }

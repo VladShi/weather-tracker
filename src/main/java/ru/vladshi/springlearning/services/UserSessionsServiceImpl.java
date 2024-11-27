@@ -22,7 +22,7 @@ public class UserSessionsServiceImpl implements UserSessionsService {
     }
 
     @Override
-    public Optional<UserSession> getUserSession(String sessionId) {
+    public Optional<UserSession> getById(String sessionId) {
 
         if (sessionId == null || sessionId.isEmpty()) {
             return Optional.empty();

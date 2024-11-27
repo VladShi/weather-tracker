@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.vladshi.springlearning.dao.UserDao;
 import ru.vladshi.springlearning.entities.User;
+import ru.vladshi.springlearning.entities.UserSession;
+import ru.vladshi.springlearning.exceptions.AuthenticationFailedException;
 import ru.vladshi.springlearning.exceptions.InvalidCredentialsException;
 import ru.vladshi.springlearning.exceptions.UserAlreadyExistsException;
 
@@ -16,10 +18,12 @@ import java.util.Optional;
 public class UserManagementServiceImpl implements UserManagementService {
 
     private final UserDao userDao;
+    private final UserSessionsService userSessionsService;
 
     @Autowired
-    public UserManagementServiceImpl(UserDao userDao) {
+    public UserManagementServiceImpl(UserDao userDao, UserSessionsService userSessionsService) {
         this.userDao = userDao;
+        this.userSessionsService = userSessionsService;
     }
 
     @Override
@@ -49,6 +53,18 @@ public class UserManagementServiceImpl implements UserManagementService {
         userDao.save(userToSave);
 
         user.setId(userToSave.getId());
+    }
+
+    @Override
+    public void authentificate(User user, String sessionId) {
+        Optional<UserSession> userSessionOptional = userSessionsService.getById(sessionId);
+        if (userSessionOptional.isEmpty()) {
+            throw new AuthenticationFailedException("Session with id " + sessionId + " not found");
+        }
+        User authenticatedUser = userSessionOptional.get().getUser();
+        user.setId(authenticatedUser.getId());
+        user.setLogin(authenticatedUser.getLogin());
+        user.setLocations(authenticatedUser.getLocations());
     }
 
     private User createUserCopyWithHashedPassword(User originalUser) {

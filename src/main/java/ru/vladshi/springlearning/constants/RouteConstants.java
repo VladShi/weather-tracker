@@ -10,6 +10,7 @@ public final class RouteConstants {
     // Constants for redirecting
     public static final String REDIRECT = "redirect:";
     public static final String REDIRECT_INDEX_PAGE = REDIRECT + INDEX_PAGE_ROUTE;
+    public static final String REDIRECT_LOGIN = REDIRECT + LOGIN_ROUTE;
 
 
     private RouteConstants() {

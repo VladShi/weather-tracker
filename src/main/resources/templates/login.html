@@ -5,7 +5,7 @@
     <title>login</title>
 </head>
 <body>
-<h1>Login</h1>
+<h1>Please, log in: </h1>
 <form th:action="@{/login}" th:method="post" th:object="${user}">
     <div>
         <label for="login">Login:</label>
@@ -20,5 +20,6 @@
     <br>
     <button type="submit">Login</button>
 </form>
+<p>Or <a th:href="@{/register}">register</a> to continue.</p>
 </body>
 </html>

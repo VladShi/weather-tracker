@@ -2,15 +2,14 @@ package ru.vladshi.springlearning.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
-import ru.vladshi.springlearning.entities.UserSession;
-import ru.vladshi.springlearning.services.UserSessionsService;
+import ru.vladshi.springlearning.entities.User;
+import ru.vladshi.springlearning.services.UserManagementService;
 
-import java.util.Optional;
-
+import static ru.vladshi.springlearning.constants.ModelAttributeConstants.USER_ATTRIBUTE;
 import static ru.vladshi.springlearning.constants.RouteConstants.*;
 import static ru.vladshi.springlearning.constants.ViewConstants.*;
 
@@ -18,18 +17,19 @@ import static ru.vladshi.springlearning.constants.ViewConstants.*;
 @RequestMapping(INDEX_PAGE_ROUTE)
 public class IndexPageController extends BaseController {
 
-    private final UserSessionsService userSessionsService;
+    private final UserManagementService userManagementService;
 
     @Autowired
-    public IndexPageController(UserSessionsService userSessionsService) {
-        this.userSessionsService = userSessionsService;
+    public IndexPageController(UserManagementService userManagementService) {
+        this.userManagementService = userManagementService;
     }
 
     @GetMapping()
-    public String index(@CookieValue(value = SESSION_COOKIE_NAME, required = false) String sessionId, Model model) {
-        Optional<UserSession> userSessionOptional = userSessionsService.getUserSession(sessionId);
-        model.addAttribute("userSessionOptional", userSessionOptional);
-        // показать инфо пользователя
+    public String index(@CookieValue(value = SESSION_COOKIE_NAME, required = false) String sessionId,
+                        @ModelAttribute(USER_ATTRIBUTE) User user) {
+
+        userManagementService.authentificate(user, sessionId);
+
         return INDEX_PAGE_VIEW;
     }
 }

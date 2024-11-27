@@ -10,7 +10,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import ru.vladshi.springlearning.entities.User;
 import ru.vladshi.springlearning.entities.UserSession;
-import ru.vladshi.springlearning.exceptions.AccessToPageDeniedException;
+import ru.vladshi.springlearning.exceptions.UserIsAlreadyAuthenticatedException;
+import ru.vladshi.springlearning.exceptions.AuthenticationFailedException;
 import ru.vladshi.springlearning.services.UserManagementService;
 import ru.vladshi.springlearning.services.UserSessionsService;
 import ru.vladshi.springlearning.Validators.UserValidator;
@@ -106,14 +107,14 @@ public class UserManagementController extends BaseController {
     }
 
     private void checkUserIsNotAuthenticated(String sessionId) {
-        if (userSessionsService.getUserSession(sessionId).isPresent()) {
-            throw new AccessToPageDeniedException("Access is denied to authenticated users.");
+        if (userSessionsService.getById(sessionId).isPresent()) {
+            throw new UserIsAlreadyAuthenticatedException("Access is denied to authenticated users.");
         }
     }
 
     private void checkUserIsAuthenticated(String sessionId) {
-        if (userSessionsService.getUserSession(sessionId).isEmpty()) {
-            throw new AccessToPageDeniedException("Access is denied to non-authenticated users.");
+        if (userSessionsService.getById(sessionId).isEmpty()) {
+            throw new AuthenticationFailedException("Access is denied to non-authenticated users.");
         }
     }
 }

@@ -12,9 +12,14 @@ import static ru.vladshi.springlearning.constants.ViewConstants.*;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(AccessToPageDeniedException.class)
-    public String handleAccessToPageDeniedException(AccessToPageDeniedException ex) {
+    @ExceptionHandler(UserIsAlreadyAuthenticatedException.class)
+    public String handleAccessToPageDeniedException(UserIsAlreadyAuthenticatedException ex) {
         return REDIRECT_INDEX_PAGE;
+    }
+
+    @ExceptionHandler(AuthenticationFailedException.class)
+    public String handleAuthenticationFailedException(AuthenticationFailedException ex) {
+        return REDIRECT_LOGIN;
     }
 
     @ExceptionHandler(UserAlreadyExistsException.class)

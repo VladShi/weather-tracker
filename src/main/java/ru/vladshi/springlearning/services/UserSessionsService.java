@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public interface UserSessionsService {
 
-    Optional<UserSession> getUserSession(String sessionId);
+    Optional<UserSession> getById(String sessionId);
 
     UserSession findOrCreate(User user);
 }

@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.ModelAndView;
 import ru.vladshi.springlearning.entities.User;
 
+import static ru.vladshi.springlearning.constants.ModelAttributeConstants.*;
 import static ru.vladshi.springlearning.constants.RouteConstants.*;
 import static ru.vladshi.springlearning.constants.ViewConstants.*;
 
@@ -38,8 +39,8 @@ public class GlobalExceptionHandler {
 
     private ModelAndView createModelAndViewForUser(String viewName, String errorMessage) {
         ModelAndView modelAndView = new ModelAndView(viewName);
-        modelAndView.addObject("errorMessage", errorMessage);
-        modelAndView.addObject("user", new User());
+        modelAndView.addObject(ERROR_MESSAGE_ATTRIBUTE, errorMessage);
+        modelAndView.addObject(USER_ATTRIBUTE, new User());
         return modelAndView;
     }
 }

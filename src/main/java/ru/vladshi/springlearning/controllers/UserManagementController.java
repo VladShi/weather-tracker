@@ -15,6 +15,7 @@ import ru.vladshi.springlearning.services.UserManagementService;
 import ru.vladshi.springlearning.services.UserSessionsService;
 import ru.vladshi.springlearning.Validators.UserValidator;
 
+import static ru.vladshi.springlearning.constants.ModelAttributeConstants.*;
 import static ru.vladshi.springlearning.constants.RouteConstants.*;
 import static ru.vladshi.springlearning.constants.ViewConstants.*;
 
@@ -33,7 +34,7 @@ public class UserManagementController extends BaseController {
 
     @GetMapping(REGISTER_ROUTE)
     public String showRegisterForm(@CookieValue(value = SESSION_COOKIE_NAME, required = false) String sessionId,
-                                   @ModelAttribute("user") User user) {
+                                   @ModelAttribute(USER_ATTRIBUTE) User user) {
 
         checkUserIsNotAuthenticated(sessionId);
         return REGISTER_VIEW;
@@ -41,7 +42,7 @@ public class UserManagementController extends BaseController {
 
     @PostMapping(REGISTER_ROUTE)
     public String registerUser(@CookieValue(value = SESSION_COOKIE_NAME, required = false) String sessionId,
-                               @ModelAttribute("user") User user,
+                               @ModelAttribute(USER_ATTRIBUTE) User user,
                                HttpServletResponse response) {
 
         checkUserIsNotAuthenticated(sessionId);
@@ -54,7 +55,7 @@ public class UserManagementController extends BaseController {
 
     @GetMapping(LOGIN_ROUTE)
     public String showLoginForm(@CookieValue(value = SESSION_COOKIE_NAME, required = false) String sessionId,
-                                @ModelAttribute("user") User user) {
+                                @ModelAttribute(USER_ATTRIBUTE) User user) {
 
         checkUserIsNotAuthenticated(sessionId);
         return LOGIN_VIEW;
@@ -62,7 +63,7 @@ public class UserManagementController extends BaseController {
 
     @PostMapping(LOGIN_ROUTE)
     public String loginUser(@CookieValue(value = SESSION_COOKIE_NAME, required = false) String sessionId,
-                            @ModelAttribute("user") User user,
+                            @ModelAttribute(USER_ATTRIBUTE) User user,
                             HttpServletResponse response) {
 
         checkUserIsNotAuthenticated(sessionId);

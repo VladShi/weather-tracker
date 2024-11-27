@@ -11,7 +11,6 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 import ru.vladshi.springlearning.config.WebConfig;
-import ru.vladshi.springlearning.dao.UserDaoImpl;
 import ru.vladshi.springlearning.entities.User;
 import ru.vladshi.springlearning.exceptions.InvalidCredentialsException;
 import ru.vladshi.springlearning.exceptions.UserAlreadyExistsException;
@@ -20,7 +19,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringJUnitConfig(classes = {WebConfig.class, UserManagementServiceImpl.class, UserDaoImpl.class})
+@SpringJUnitConfig(classes = {WebConfig.class})
 @TestPropertySource("classpath:application-test.properties")
 @WebAppConfiguration
 @Transactional

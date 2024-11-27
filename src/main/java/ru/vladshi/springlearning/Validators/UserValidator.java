@@ -1,12 +1,10 @@
 package ru.vladshi.springlearning.Validators;
 
-import org.springframework.stereotype.Component;
 import ru.vladshi.springlearning.entities.User;
 import ru.vladshi.springlearning.exceptions.UserValidationOnLogInException;
 import ru.vladshi.springlearning.exceptions.UserValidationOnRegisterException;
 
-@Component
-public class UserValidator {
+public final class UserValidator {
 
     private static final String REGISTER = "register";
     private static final String LOGIN = "login";
@@ -14,15 +12,15 @@ public class UserValidator {
     public UserValidator() {
     }
 
-    public void validateOnRegister(User user) {
+    public static void validateOnRegister(User user) {
         validate(user, REGISTER);
     }
 
-    public void validateOnLogIn(User user) {
+    public static void validateOnLogIn(User user) {
         validate(user, LOGIN);
     }
 
-    private void validate(User user, String action) {
+    private static void validate(User user, String action) {
         ////// login validation //////
         String login = user.getLogin();
 
@@ -46,7 +44,7 @@ public class UserValidator {
         }
     }
 
-    private void throwUserValidationExceptionByAction(String action, String message) {
+    private static void throwUserValidationExceptionByAction(String action, String message) {
         switch (action) {
             case REGISTER -> throw new UserValidationOnRegisterException(message);
             case LOGIN -> throw new UserValidationOnLogInException(message);

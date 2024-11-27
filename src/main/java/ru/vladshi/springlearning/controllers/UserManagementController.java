@@ -23,15 +23,12 @@ public class UserManagementController extends BaseController {
 
     private final UserSessionsService userSessionsService;
     private final UserManagementService userManagementService;
-    private final UserValidator userValidator;
 
     @Autowired
     public UserManagementController(UserSessionsService userSessionsService,
-                                    UserManagementService userManagementService,
-                                    UserValidator userValidator) {
+                                    UserManagementService userManagementService) {
         this.userSessionsService = userSessionsService;
         this.userManagementService = userManagementService;
-        this.userValidator = userValidator;
     }
 
     @GetMapping(REGISTER_ROUTE)
@@ -48,7 +45,7 @@ public class UserManagementController extends BaseController {
                                HttpServletResponse response) {
 
         checkUserIsNotAuthenticated(sessionId);
-        userValidator.validateOnRegister(user);
+        UserValidator.validateOnRegister(user);
         userManagementService.register(user);
         setSessionCookie(user, response);
 
@@ -69,7 +66,7 @@ public class UserManagementController extends BaseController {
                             HttpServletResponse response) {
 
         checkUserIsNotAuthenticated(sessionId);
-        userValidator.validateOnLogIn(user);
+        UserValidator.validateOnLogIn(user);
         userManagementService.logIn(user);
         setSessionCookie(user, response);
 

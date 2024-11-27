@@ -2,32 +2,32 @@ package ru.vladshi.springlearning.controllers;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import ru.vladshi.springlearning.entities.User;
 import ru.vladshi.springlearning.entities.UserSession;
-import ru.vladshi.springlearning.exceptions.InvalidCredentialsException;
-import ru.vladshi.springlearning.exceptions.UserAlreadyExistsException;
 import ru.vladshi.springlearning.services.UserManagementService;
 import ru.vladshi.springlearning.services.UserSessionsService;
+import ru.vladshi.springlearning.Validators.UserValidator;
 
 @Controller
 public class UserManagementController extends BaseController {
 
     private final UserSessionsService userSessionsService;
     private final UserManagementService userManagementService;
+    private final UserValidator userValidator;
 
     @Autowired
     public UserManagementController(UserSessionsService userSessionsService,
-                                    UserManagementService userManagementService) {
+                                    UserManagementService userManagementService,
+                                    UserValidator userValidator) {
         this.userSessionsService = userSessionsService;
         this.userManagementService = userManagementService;
+        this.userValidator = userValidator;
     }
 
     @GetMapping("/register")
@@ -38,8 +38,7 @@ public class UserManagementController extends BaseController {
 
     @PostMapping("/register")
     public String registerUser(@CookieValue(value = SESSION_COOKIE_NAME, required = false) String sessionId,
-                               @ModelAttribute("user") @Valid User user,
-                               BindingResult bindingResult,
+                               @ModelAttribute("user") User user,
                                HttpServletResponse response) {
 
         if (isUserAuthenticated(sessionId)) {
@@ -47,22 +46,8 @@ public class UserManagementController extends BaseController {
             //  UserAlreadyAuth..(). И потом в глобальном обработчике отлавливать и перенаправлять.
             return "redirect:/";
         }
-
-        if (bindingResult.hasErrors()) {
-            return "register";
-            // TODO кажется вместо bindingResult чище будет сделать свой валидатор выкидывающий кастомные исключения и
-            //  глобальный обработчик ошибок для них. Тогда избавимся от if и try-catch в контроллере. Только не забыть
-            //  в entity убрать аннотации и  поправить шаблоны представления. @ErrorHandler одинаковый для нескольких
-            //  исключений возможен интересно?
-        }
-
-        try {
-            userManagementService.register(user);
-        } catch (UserAlreadyExistsException ex) {
-            bindingResult.rejectValue("login", "error.login", ex.getMessage());
-            return "register";
-        }
-
+        userValidator.validateOnRegister(user);
+        userManagementService.register(user);
         setSessionCookie(user, response);
 
         return "redirect:/";
@@ -76,24 +61,14 @@ public class UserManagementController extends BaseController {
 
     @PostMapping("/login")
     public String loginUser(@CookieValue(value = SESSION_COOKIE_NAME, required = false) String sessionId,
-                            @ModelAttribute("user") @Valid User user, BindingResult bindingResult,
+                            @ModelAttribute("user") User user,
                             HttpServletResponse response) {
 
         if (isUserAuthenticated(sessionId)) {
             return "redirect:/";
         }
-
-        if (bindingResult.hasErrors()) {
-            return "login";
-        }
-
-        try {
-            userManagementService.logIn(user);
-        } catch (InvalidCredentialsException ex) {
-            bindingResult.rejectValue("login", "error.login", ex.getMessage());
-            return "login";
-        }
-
+        userValidator.validateOnLogIn(user);
+        userManagementService.logIn(user);
         setSessionCookie(user, response);
 
         return "redirect:/";
@@ -106,7 +81,6 @@ public class UserManagementController extends BaseController {
         if (!isUserAuthenticated(sessionId)) {
             return "redirect:/";
         }
-
         clearSessionCookie(response);
 
         return "redirect:/";

@@ -1,8 +1,6 @@
 package ru.vladshi.springlearning.entities;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -20,13 +18,9 @@ public class User {
     private int id;
 
     @Column(name = "login", unique = true, nullable = false)
-    @Size(min = 5, max = 50, message = "Login should be between 5 and 50 characters")
-    @NotNull(message = "Login is required")
     private String login;
 
     @Column(name = "password", nullable = false, length = 60)
-    @Size(min = 8, max = 60, message = "Password should be between 8 and 20 characters")
-    @NotNull(message = "Password is required")
     private String password;
 
     @ManyToMany

@@ -5,18 +5,17 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import ru.vladshi.springlearning.annotations.AuthenticationMode;
 import ru.vladshi.springlearning.entities.User;
 import ru.vladshi.springlearning.entities.UserSession;
-import ru.vladshi.springlearning.exceptions.UserIsAlreadyAuthenticatedException;
-import ru.vladshi.springlearning.exceptions.AuthenticationFailedException;
 import ru.vladshi.springlearning.services.UserManagementService;
 import ru.vladshi.springlearning.services.UserSessionsService;
 import ru.vladshi.springlearning.Validators.UserValidator;
 
+import static ru.vladshi.springlearning.annotations.AuthenticationMode.Mode.*;
 import static ru.vladshi.springlearning.constants.ModelAttributeConstants.*;
 import static ru.vladshi.springlearning.constants.RouteConstants.*;
 import static ru.vladshi.springlearning.constants.ViewConstants.*;
@@ -38,19 +37,15 @@ public class UserManagementController extends BaseController {
     }
 
     @GetMapping(REGISTER_ROUTE)
-    public String showRegisterForm(@CookieValue(value = SESSION_COOKIE_NAME, required = false) String sessionId,
-                                   @ModelAttribute(USER_ATTRIBUTE) User user) {
-
-        checkUserIsNotAuthenticated(sessionId);
+    @AuthenticationMode(NOT_AUTHENTICATED)
+    public String showRegisterForm(@ModelAttribute(USER_ATTRIBUTE) User user) {
         return REGISTER_VIEW;
     }
 
     @PostMapping(REGISTER_ROUTE)
-    public String registerUser(@CookieValue(value = SESSION_COOKIE_NAME, required = false) String sessionId,
-                               @ModelAttribute(USER_ATTRIBUTE) User user,
-                               HttpServletResponse response) {
+    @AuthenticationMode(NOT_AUTHENTICATED)
+    public String registerUser(@ModelAttribute(USER_ATTRIBUTE) User user, HttpServletResponse response) {
 
-        checkUserIsNotAuthenticated(sessionId);
         UserValidator.validateOnRegister(user);
         userManagementService.register(user);
         setSessionCookie(user, response);
@@ -59,19 +54,15 @@ public class UserManagementController extends BaseController {
     }
 
     @GetMapping(LOGIN_ROUTE)
-    public String showLoginForm(@CookieValue(value = SESSION_COOKIE_NAME, required = false) String sessionId,
-                                @ModelAttribute(USER_ATTRIBUTE) User user) {
-
-        checkUserIsNotAuthenticated(sessionId);
+    @AuthenticationMode(NOT_AUTHENTICATED)
+    public String showLoginForm(@ModelAttribute(USER_ATTRIBUTE) User user) {
         return LOGIN_VIEW;
     }
 
     @PostMapping(LOGIN_ROUTE)
-    public String loginUser(@CookieValue(value = SESSION_COOKIE_NAME, required = false) String sessionId,
-                            @ModelAttribute(USER_ATTRIBUTE) User user,
-                            HttpServletResponse response) {
+    @AuthenticationMode(NOT_AUTHENTICATED)
+    public String loginUser(@ModelAttribute(USER_ATTRIBUTE) User user,HttpServletResponse response) {
 
-        checkUserIsNotAuthenticated(sessionId);
         UserValidator.validateOnLogIn(user);
         userManagementService.logIn(user);
         setSessionCookie(user, response);
@@ -80,12 +71,9 @@ public class UserManagementController extends BaseController {
     }
 
     @GetMapping(LOGOUT_ROUTE)
-    public String logoutUser(@CookieValue(value = SESSION_COOKIE_NAME, required = false) String sessionId,
-                             HttpServletResponse response) {
-
-        checkUserIsAuthenticated(sessionId);
+    @AuthenticationMode(AUTHENTICATED)
+    public String logoutUser(HttpServletResponse response) {
         clearSessionCookie(response);
-
         return REDIRECT_INDEX_PAGE;
     }
 
@@ -108,17 +96,5 @@ public class UserManagementController extends BaseController {
         emptySessionCookie.setHttpOnly(true);
 
         response.addCookie(emptySessionCookie);
-    }
-
-    private void checkUserIsNotAuthenticated(String sessionId) {
-        if (userSessionsService.getById(sessionId).isPresent()) {
-            throw new UserIsAlreadyAuthenticatedException("Access is denied to authenticated users.");
-        }
-    }
-
-    private void checkUserIsAuthenticated(String sessionId) {
-        if (userSessionsService.getById(sessionId).isEmpty()) {
-            throw new AuthenticationFailedException("Access is denied to non-authenticated users.");
-        }
     }
 }

@@ -65,6 +65,12 @@ public class UserSessionsServiceImpl implements UserSessionsService {
         return userSession;
     }
 
+    @Override
+    public void updateLastActivity(UserSession session) {
+        session.setLastActivityAt(LocalDateTime.now());
+        userSessionDao.save(session);
+    }
+
     private boolean hasSessionExpired(UserSession userSession) {
         LocalDateTime expiresAt = userSession.getExpiresAt();
         return expiresAt.isBefore(LocalDateTime.now());

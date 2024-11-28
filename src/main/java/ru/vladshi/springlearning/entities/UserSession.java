@@ -20,6 +20,9 @@ public class UserSession {
     @Column(name = "expires_at", nullable = false)
     private LocalDateTime expiresAt;
 
+    @Column(name = "last_activity_at")
+    private LocalDateTime lastActivityAt;
+
     @OneToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
     private User user;

@@ -10,4 +10,6 @@ public interface UserSessionsService {
     Optional<UserSession> getById(String sessionId);
 
     UserSession findOrCreate(User user);
+
+    void updateLastActivity(UserSession session);
 }

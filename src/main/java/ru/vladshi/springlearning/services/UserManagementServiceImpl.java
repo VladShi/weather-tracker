@@ -56,15 +56,12 @@ public class UserManagementServiceImpl implements UserManagementService {
     }
 
     @Override
-    public void authentificate(User user, String sessionId) {
+    public User getUserBySessionId(String sessionId) {
         Optional<UserSession> userSessionOptional = userSessionsService.getById(sessionId);
         if (userSessionOptional.isEmpty()) {
             throw new AuthenticationFailedException("Session with id " + sessionId + " not found");
         }
-        User authenticatedUser = userSessionOptional.get().getUser();
-        user.setId(authenticatedUser.getId());
-        user.setLogin(authenticatedUser.getLogin());
-        user.setLocations(authenticatedUser.getLocations());
+        return userSessionOptional.get().getUser();
     }
 
     private User createUserCopyWithHashedPassword(User originalUser) {

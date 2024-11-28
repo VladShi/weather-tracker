@@ -14,11 +14,13 @@ import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 import org.thymeleaf.spring6.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.spring6.view.ThymeleafViewResolver;
 import org.thymeleaf.templatemode.TemplateMode;
+import ru.vladshi.springlearning.interceptors.AuthenticationInterceptor;
 
 import javax.sql.DataSource;
 import java.util.Properties;
@@ -33,6 +35,8 @@ public class WebConfig implements WebMvcConfigurer {
 
     private final ApplicationContext applicationContext;
     private final Environment env;
+    @Autowired
+    private AuthenticationInterceptor authenticationInterceptor;
 
     @Autowired
     public WebConfig(ApplicationContext applicationContext, Environment environment) {
@@ -128,6 +132,12 @@ public class WebConfig implements WebMvcConfigurer {
         liquibase.setChangeLog(env.getRequiredProperty("spring.liquibase.change-log"));
         liquibase.setDataSource(dataSource());
         return liquibase;
+    }
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(authenticationInterceptor)
+                .addPathPatterns("/**");
     }
 }
 

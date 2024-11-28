@@ -9,5 +9,5 @@ public interface UserManagementService {
 
     void register(User user);
 
-    void authentificate(User user, String sessionId);
+    User getUserBySessionId(String sessionId);
 }

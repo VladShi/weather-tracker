@@ -44,6 +44,7 @@ public class UserSessionDaoImpl implements UserSessionDao {
     @Override
     public void save(UserSession userSession) {
         Session session = sessionFactory.getCurrentSession();
-        session.persist(userSession);
+        UserSession managedUserSession = session.merge(userSession);
+        userSession.setId(managedUserSession.getId());
     }
 }

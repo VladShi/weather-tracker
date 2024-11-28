@@ -1,4 +1,3 @@
-
 # example: hibernate.driver_class=org.postgresql.Driver
 hibernate.driver_class=
 # example:  hibernate.connection.url=jdbc:postgresql://localhost:5432/my_db_name
@@ -9,3 +8,6 @@ hibernate.connection.password=
 hibernate.show_sql=true
 
 spring.liquibase.change-log=classpath:/db/changelog/db.changelog-master.xml
+
+session.cookie.max-age-minutes=30
+session.expiration.minutes=30

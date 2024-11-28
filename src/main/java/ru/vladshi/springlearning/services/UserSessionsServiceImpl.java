@@ -1,6 +1,7 @@
 package ru.vladshi.springlearning.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.vladshi.springlearning.dao.UserSessionDao;
@@ -15,10 +16,13 @@ import java.util.Optional;
 public class UserSessionsServiceImpl implements UserSessionsService {
 
     private final UserSessionDao userSessionDao;
+    private final int sessionExpirationMinutes;
 
     @Autowired
-    public UserSessionsServiceImpl(UserSessionDao userSessionsDao) {
+    public UserSessionsServiceImpl(UserSessionDao userSessionsDao,
+                                   @Value("${session.expiration.minutes:30}") int sessionExpirationMinutes) {
         this.userSessionDao = userSessionsDao;
+        this.sessionExpirationMinutes = sessionExpirationMinutes;
     }
 
     @Override
@@ -55,7 +59,7 @@ public class UserSessionsServiceImpl implements UserSessionsService {
 
         UserSession userSession = new UserSession();
         userSession.setUser(user);
-        userSession.setExpiresAt(LocalDateTime.now().plusMinutes(30)); // TODO Завести константу для времени истечения сессии
+        userSession.setExpiresAt(LocalDateTime.now().plusMinutes(sessionExpirationMinutes));
         userSessionDao.save(userSession);
 
         return userSession;

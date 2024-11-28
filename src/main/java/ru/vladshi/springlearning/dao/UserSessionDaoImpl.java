@@ -22,7 +22,7 @@ public class UserSessionDaoImpl implements UserSessionDao {
     @Override
     public Optional<UserSession> findById(String sessionId) {
         Session session = sessionFactory.getCurrentSession();
-        return Optional.ofNullable(session.get(UserSession.class, sessionId)); // TODO проверить что будет если из cookie придет не в формате UUID строка
+        return Optional.ofNullable(session.get(UserSession.class, sessionId));
     }
 
     @Override

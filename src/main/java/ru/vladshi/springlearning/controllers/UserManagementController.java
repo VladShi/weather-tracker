@@ -3,6 +3,7 @@ package ru.vladshi.springlearning.controllers;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,12 +26,15 @@ public class UserManagementController extends BaseController {
 
     private final UserSessionsService userSessionsService;
     private final UserManagementService userManagementService;
+    private final int sessionCookieMaxAge;
 
     @Autowired
     public UserManagementController(UserSessionsService userSessionsService,
-                                    UserManagementService userManagementService) {
+                                    UserManagementService userManagementService,
+                                    @Value("${session.cookie.max-age-minutes:30}") int sessionCookieMaxAge) {
         this.userSessionsService = userSessionsService;
         this.userManagementService = userManagementService;
+        this.sessionCookieMaxAge = sessionCookieMaxAge * 60;  // in seconds
     }
 
     @GetMapping(REGISTER_ROUTE)
@@ -91,7 +95,7 @@ public class UserManagementController extends BaseController {
 
         Cookie sessionCookie = new Cookie(SESSION_COOKIE_NAME, userSession.getId());
         sessionCookie.setPath("/");
-        sessionCookie.setMaxAge(60 * 60 * 24);  // TODO константу сколько время хранится куки на стороне юзера
+        sessionCookie.setMaxAge(sessionCookieMaxAge);
         sessionCookie.setHttpOnly(true);
 
         response.addCookie(sessionCookie);

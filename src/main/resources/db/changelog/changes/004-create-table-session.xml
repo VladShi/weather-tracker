@@ -21,7 +21,6 @@
                 <constraints foreignKeyName="session_user_id"
                              references="user_table(id)"
                              deleteCascade="true"
-                             unique="true"
                              nullable="false"/>
             </column>
 

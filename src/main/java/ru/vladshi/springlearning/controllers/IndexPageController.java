@@ -28,7 +28,7 @@ public class IndexPageController extends BaseController {
     public String index(@CookieValue(value = SESSION_COOKIE_NAME, required = false) String sessionId,
                         @ModelAttribute(USER_ATTRIBUTE) User user) {
 
-        userManagementService.authentificate(user, sessionId);
+        userManagementService.authenticate(user, sessionId);
 
         return INDEX_PAGE_VIEW;
     }

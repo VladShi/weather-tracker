@@ -13,6 +13,7 @@ import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.web.client.RestClient;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.thymeleaf.spring6.SpringTemplateEngine;
@@ -128,6 +129,13 @@ public class WebConfig implements WebMvcConfigurer {
         liquibase.setChangeLog(env.getRequiredProperty("spring.liquibase.change-log"));
         liquibase.setDataSource(dataSource());
         return liquibase;
+    }
+
+    @Bean
+    public RestClient restClient() {
+        return RestClient.builder()
+            .baseUrl("weather.api.base-url")
+            .build();
     }
 }
 

@@ -1,22 +1,18 @@
 package ru.vladshi.springlearning.dao;
 
+import lombok.RequiredArgsConstructor;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.vladshi.springlearning.entities.User;
 
 import java.util.Optional;
 
 @Component
+@RequiredArgsConstructor
 public class UserDaoImpl implements UserDao {
 
     private final SessionFactory sessionFactory;
-
-    @Autowired
-    public UserDaoImpl(SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
-    }
 
     @Override
     public Optional<User> findByLogin(String login) {

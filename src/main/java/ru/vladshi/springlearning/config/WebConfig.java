@@ -1,7 +1,7 @@
 package ru.vladshi.springlearning.config;
 
 import liquibase.integration.spring.SpringLiquibase;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -30,16 +30,11 @@ import java.util.Properties;
 @EnableWebMvc
 @EnableTransactionManagement
 @PropertySource("classpath:application.properties")
+@RequiredArgsConstructor
 public class WebConfig implements WebMvcConfigurer {
 
     private final ApplicationContext applicationContext;
     private final Environment env;
-
-    @Autowired
-    public WebConfig(ApplicationContext applicationContext, Environment environment) {
-        this.env = environment;
-        this.applicationContext = applicationContext;
-    }
 
     @Bean
     public DataSource dataSource() {

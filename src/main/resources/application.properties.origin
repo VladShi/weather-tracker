@@ -13,5 +13,7 @@ session.cookie.max-age-minutes=30
 session.expiration.minutes=30
 
 # https://openweathermap.org/api
-weather.api.base-url=https://api.openweathermap.org/
-weather.api.key=
+openweather.api.base-url=https://api.openweathermap.org/
+openweather.api.geocoding=geo/1.0/direct?q=%s&limit=%s&appid=%s
+openweather.api.max-locations=5
+openweather.api.key=

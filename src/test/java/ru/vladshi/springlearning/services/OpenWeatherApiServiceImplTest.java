@@ -10,6 +10,8 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.web.client.RestClient;
 import ru.vladshi.springlearning.dto.LocationDto;
+import ru.vladshi.springlearning.dto.WeatherDto;
+import ru.vladshi.springlearning.entities.Location;
 import ru.vladshi.springlearning.exceptions.OpenWeatherException;
 import ru.vladshi.springlearning.exceptions.OpenWeatherUnauthorizedException;
 
@@ -26,11 +28,14 @@ class OpenWeatherApiServiceImplTest {
 
     private static final String GEOCODING_URL = "/geo/1.0/direct?q=%s&limit=%d&appid=%s";
     private static final int DEFAULT_MAX_LOCATIONS = 5;
+    private static final String WEATHER_URL = "/data/2.5/weather?lat=%s&lon=%s&appid=%s&units=metric";
     private static final String API_KEY = "test-api-key";
     private static final String GEOCODING_PATH_PATTERN = GEOCODING_URL
             .replaceAll("\\?.*", ".*"); // Заменяем все параметры форматирования на .*
+    private static final String WEATHER_PATH_PATTERN = WEATHER_URL.replaceAll("\\?.*", ".*");
 
     private static WeatherApiService openWeatherApiService;
+    private static Location testLocation;
 
     @BeforeAll
     static void setUp(WireMockRuntimeInfo wireMockRuntimeInfo) {
@@ -39,7 +44,11 @@ class OpenWeatherApiServiceImplTest {
         RestClient restClient = RestClient.create();
 
         openWeatherApiService = new OpenWeatherApiServiceImpl(
-                restClient, baseUrl, GEOCODING_URL, DEFAULT_MAX_LOCATIONS, API_KEY);
+                restClient, baseUrl, GEOCODING_URL, DEFAULT_MAX_LOCATIONS, WEATHER_URL, API_KEY);
+
+        testLocation = new Location();
+        testLocation.setLatitude(new BigDecimal("55.7558"));
+        testLocation.setLongitude(new BigDecimal("37.6173"));
     }
 
     @Test
@@ -93,6 +102,73 @@ class OpenWeatherApiServiceImplTest {
         assertEquals("Ohio", moscowUS.getState());
     }
 
+    @Test
+    void testGetWeathers_WhenStatusIs200_ShouldReturnWeather() {
+        String jsonResponse = """
+                {
+                   "coord": {
+                     "lon": 37.6173,
+                     "lat": 55.7558
+                   },
+                   "weather": [
+                     {
+                       "id": 804,
+                       "main": "Clouds",
+                       "description": "overcast clouds",
+                       "icon": "04d"
+                     }
+                   ],
+                   "base": "stations",
+                   "main": {
+                     "temp": -3.88,
+                     "feels_like": -9.35,
+                     "temp_min": -4.71,
+                     "temp_max": -3.12,
+                     "pressure": 1015,
+                     "humidity": 70,
+                     "sea_level": 1015,
+                     "grnd_level": 995
+                   },
+                   "visibility": 10000,
+                   "wind": {
+                     "speed": 4.39,
+                     "deg": 249,
+                     "gust": 11.83
+                   },
+                   "clouds": {
+                     "all": 91
+                   },
+                   "dt": 1733909343,
+                   "sys": {
+                     "type": 2,
+                     "id": 2094500,
+                     "country": "RU",
+                     "sunrise": 1733896165,
+                     "sunset": 1733921795
+                   },
+                   "timezone": 10800,
+                   "id": 524901,
+                   "name": "Moscow",
+                   "cod": 200
+                }
+                """;
+
+        stubFor(get(urlPathMatching(WEATHER_PATH_PATTERN))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(jsonResponse)));
+
+        List<Location> locations = List.of(testLocation);
+
+        List<WeatherDto> weathers = openWeatherApiService.getWeathers(locations);
+
+        assertEquals(1, weathers.size());
+        WeatherDto weather = weathers.get(0);
+        assertEquals("Moscow", weather.getName());
+        assertEquals(new BigDecimal("-3.88"), weather.getTemperature());
+        // Добавь дополнительные проверки для других полей, если это необходимо
+    }
 
     static Stream<Arguments> statusCodeProvider() {
         return Stream.of(
@@ -113,6 +189,21 @@ class OpenWeatherApiServiceImplTest {
                         .withHeader("Content-Type", "application/json")));
 
         assertThrows(expectedException, () -> openWeatherApiService.getLocationsByName("Moscow"));
+    }
+
+    @ParameterizedTest
+    @MethodSource("statusCodeProvider")
+    void testGetWeathers_ThrowsException_ForVariousStatusCodes(int statusCode,
+                                                               Class<? extends Exception> expectedException) {
+
+        stubFor(get(urlPathMatching(WEATHER_PATH_PATTERN))
+                .willReturn(aResponse()
+                        .withStatus(statusCode)
+                        .withHeader("Content-Type", "application/json")));
+
+        List<Location> locations = List.of(testLocation);
+
+        assertThrows(expectedException, () -> openWeatherApiService.getWeathers(locations));
     }
 
 //    @Mock

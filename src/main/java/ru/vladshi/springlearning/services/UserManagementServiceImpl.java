@@ -1,7 +1,7 @@
 package ru.vladshi.springlearning.services;
 
+import lombok.RequiredArgsConstructor;
 import org.mindrot.jbcrypt.BCrypt;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.vladshi.springlearning.dao.UserDao;
@@ -14,17 +14,12 @@ import ru.vladshi.springlearning.exceptions.UserAlreadyExistsException;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 @Transactional
 public class UserManagementServiceImpl implements UserManagementService {
 
     private final UserDao userDao;
     private final UserSessionsService userSessionsService;
-
-    @Autowired
-    public UserManagementServiceImpl(UserDao userDao, UserSessionsService userSessionsService) {
-        this.userDao = userDao;
-        this.userSessionsService = userSessionsService;
-    }
 
     @Override
     public void logIn(User requestedUser) {

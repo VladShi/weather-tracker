@@ -1,8 +1,8 @@
 package ru.vladshi.springlearning.dao;
 
+import lombok.RequiredArgsConstructor;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.vladshi.springlearning.entities.User;
 import ru.vladshi.springlearning.entities.UserSession;
@@ -10,14 +10,10 @@ import ru.vladshi.springlearning.entities.UserSession;
 import java.util.Optional;
 
 @Component
+@RequiredArgsConstructor
 public class UserSessionDaoImpl implements UserSessionDao {
 
     private final SessionFactory sessionFactory;
-
-    @Autowired
-    public UserSessionDaoImpl(SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
-    }
 
     @Override
     public Optional<UserSession> findById(String sessionId) {

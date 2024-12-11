@@ -1,6 +1,6 @@
 package ru.vladshi.springlearning.controllers;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,15 +14,11 @@ import static ru.vladshi.springlearning.constants.RouteConstants.*;
 import static ru.vladshi.springlearning.constants.ViewConstants.*;
 
 @Controller
+@RequiredArgsConstructor
 @RequestMapping(INDEX_PAGE_ROUTE)
 public class IndexPageController extends BaseController {
 
     private final UserManagementService userManagementService;
-
-    @Autowired
-    public IndexPageController(UserManagementService userManagementService) {
-        this.userManagementService = userManagementService;
-    }
 
     @GetMapping()
     public String index(@CookieValue(value = SESSION_COOKIE_NAME, required = false) String sessionId,

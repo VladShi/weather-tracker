@@ -22,10 +22,10 @@ public class Location {
     private String name;
 
     @Column(name = "latitude", nullable = false, precision = 6, scale = 3)
-    private BigDecimal Latitude;
+    private BigDecimal latitude;
 
     @Column(name = "longitude", nullable = false, precision = 6, scale = 3)
-    private BigDecimal Longitude;
+    private BigDecimal longitude;
 
     @ManyToMany(mappedBy = "locations")
     private List<User> users;

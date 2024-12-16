@@ -28,7 +28,7 @@ public class LocationsController extends BaseController {
                                  @RequestParam("location-name") String locationName,
                                  Model model) {
 
-        User authUser = userManagementService.authenticate(sessionId);
+        User authUser = userManagementService.authenticate(sessionId);  // TODO добавить валидацию для locationName
 
         model.addAttribute(USER_ATTRIBUTE, authUser);
         model.addAttribute(LOCATIONS_ATTRIBUTE, weatherApiService.getLocationsByName(locationName));

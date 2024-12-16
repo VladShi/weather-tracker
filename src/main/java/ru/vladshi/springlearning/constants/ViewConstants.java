@@ -7,6 +7,8 @@ public class ViewConstants {
     public static final String REGISTER_VIEW = "register";
     public static final String LOCATIONS_VIEW = "locations";
 
+    public static final String ERROR_500_VIEW = "500";
+
     private ViewConstants() {
         throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
     }

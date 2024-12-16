@@ -11,6 +11,7 @@ import ru.vladshi.springlearning.services.LocationService;
 import ru.vladshi.springlearning.services.UserManagementService;
 import ru.vladshi.springlearning.services.WeatherApiService;
 
+import static ru.vladshi.springlearning.Validators.LocationNameValidator.checkIsValid;
 import static ru.vladshi.springlearning.constants.ModelAttributeConstants.*;
 import static ru.vladshi.springlearning.constants.RouteConstants.*;
 import static ru.vladshi.springlearning.constants.ViewConstants.LOCATIONS_VIEW;
@@ -28,9 +29,15 @@ public class LocationsController extends BaseController {
                                  @RequestParam("location-name") String locationName,
                                  Model model) {
 
-        User authUser = userManagementService.authenticate(sessionId);  // TODO добавить валидацию для locationName
-
+        User authUser = userManagementService.authenticate(sessionId);
         model.addAttribute(USER_ATTRIBUTE, authUser);
+
+        if(!checkIsValid(locationName)) {
+            model.addAttribute(ERROR_MESSAGE_ATTRIBUTE, "The location name must be from 2 to 40"
+                    + " english or russian letters and may contain a dash '-' character.");
+            return LOCATIONS_VIEW;
+        }
+
         model.addAttribute(LOCATIONS_ATTRIBUTE, weatherApiService.getLocationsByName(locationName));
 
         return LOCATIONS_VIEW; // TODO подумать о том что бы все константы передавать во view

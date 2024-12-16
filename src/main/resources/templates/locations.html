@@ -25,8 +25,7 @@
             <input type="text" th:name="location-name" id="location-name"/>
         </div>
         <div style="color: red" th:if="${errorMessage != null}" th:text="${errorMessage}">errors</div>
-        <div th:if="${errorMessage == null}"><br/></div>
-        <br>
+        <div th:if="${errorMessage == null}"><br></div>
         <button type="submit">Find</button>
     </form>
 

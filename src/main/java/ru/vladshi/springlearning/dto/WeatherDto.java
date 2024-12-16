@@ -11,7 +11,11 @@ import java.math.BigDecimal;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class WeatherDto {
 
-    String name;
+    @JsonIgnoreProperties
+    private String locationName;
+
+    @JsonIgnoreProperties
+    private int locationId;
 
     @JsonProperty("main")
     private Main main;

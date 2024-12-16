@@ -8,4 +8,6 @@ public interface UserDao {
     Optional<User> findByLogin(String login);
 
     void save(User user);
+
+    void merge(User user);
 }

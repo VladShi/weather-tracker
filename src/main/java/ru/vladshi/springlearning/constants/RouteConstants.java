@@ -6,6 +6,8 @@ public final class RouteConstants {
     public static final String REGISTER_ROUTE = "/register";
     public static final String LOGIN_ROUTE = "/login";
     public static final String LOGOUT_ROUTE = "/logout";
+    public static final String LOCATIONS_ROUTE = "/locations";
+    public static final String REMOVE_LOCATION_ROUTE = "/remove-location";
 
     // Constants for redirecting
     public static final String REDIRECT = "redirect:";

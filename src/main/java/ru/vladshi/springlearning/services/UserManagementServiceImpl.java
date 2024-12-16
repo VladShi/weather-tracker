@@ -60,6 +60,7 @@ public class UserManagementServiceImpl implements UserManagementService {
         user.setId(authenticatedUser.getId());
         user.setLogin(authenticatedUser.getLogin());
         user.setLocations(authenticatedUser.getLocations());
+        user.setPassword(authenticatedUser.getPassword());
     }
 
     private User createUserCopyWithHashedPassword(User originalUser) {

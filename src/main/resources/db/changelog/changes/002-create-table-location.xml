@@ -17,11 +17,11 @@
                 <constraints nullable="false"/>
             </column>
 
-            <column name="latitude" type="DECIMAL(6, 3)" >
+            <column name="latitude" type="DECIMAL(10, 7)" >
                 <constraints nullable="false"/>
             </column>
 
-            <column name="longitude" type="DECIMAL(6, 3)">
+            <column name="longitude" type="DECIMAL(10, 7)">
                 <constraints nullable="false"/>
             </column>
 

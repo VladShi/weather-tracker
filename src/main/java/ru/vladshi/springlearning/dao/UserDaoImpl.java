@@ -25,7 +25,11 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public void save(User user) {
-        Session session = sessionFactory.getCurrentSession();
-        session.persist(user);
+        sessionFactory.getCurrentSession().persist(user);
+    }
+
+    @Override
+    public void merge(User user) {
+        sessionFactory.getCurrentSession().merge(user);
     }
 }

@@ -23,7 +23,7 @@ public class User {
     @Column(name = "password", nullable = false, length = 60)
     private String password;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_location",
             joinColumns = @JoinColumn(name = "user_id"),

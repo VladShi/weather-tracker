@@ -165,7 +165,7 @@ class OpenWeatherApiServiceImplTest {
 
         assertEquals(1, weathers.size());
         WeatherDto weather = weathers.get(0);
-        assertEquals("Moscow", weather.getName());
+        assertEquals("Moscow", weather.getLocationName());
         assertEquals(new BigDecimal("-3.88"), weather.getTemperature());
         // Добавь дополнительные проверки для других полей, если это необходимо
     }

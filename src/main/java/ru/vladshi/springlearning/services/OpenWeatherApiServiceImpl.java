@@ -37,10 +37,10 @@ public class OpenWeatherApiServiceImpl implements WeatherApiService {
     private String apiKey;
     
     @Override
-    public List<LocationDto> getLocationsByName(String geoName, int userMaxLocations) {
+    public List<LocationDto> getLocationsByName(String locationName, int userMaxLocations) { // TODO реализовать во вьюхах работу с использованием userMaxLocations
         int maxLocations = (userMaxLocations > 0) ? userMaxLocations : defaultMaxLocations;
-        String uri = baseUrl + geocodingUrl.formatted(geoName, maxLocations, apiKey);
-        return restClient.get()
+        String uri = baseUrl + geocodingUrl.formatted(locationName, maxLocations, apiKey);
+        return restClient.get()                                 // TODO перехват для всех restClient, try-catch или в глобальном перехватчике ResourceAccessException
                 .uri(uri)
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
@@ -55,8 +55,8 @@ public class OpenWeatherApiServiceImpl implements WeatherApiService {
     }
 
     @Override
-    public List<LocationDto> getLocationsByName(String geoName) {
-        return getLocationsByName(geoName, defaultMaxLocations);
+    public List<LocationDto> getLocationsByName(String locationName) {
+        return getLocationsByName(locationName, defaultMaxLocations);
     }
 
     @Override
@@ -69,22 +69,33 @@ public class OpenWeatherApiServiceImpl implements WeatherApiService {
         }
 
         for (Location location : locations) {
-            String uri = baseUrl + weatherUrl.formatted(location.getLatitude(), location.getLongitude(), apiKey);
-            weathers.add(
-                    restClient.get()
-                        .uri(uri)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .retrieve()
-                        .onStatus(HttpStatus.UNAUTHORIZED::equals, (request, response) -> {
-                            throw new OpenWeatherUnauthorizedException("Please write proper API key"); // TODO добавить обработку ошибки
-                        })
-                        .onStatus(status -> status.is4xxClientError() || status.is5xxServerError()
-                                , ((request, response) -> { throw new OpenWeatherException(
-                                    "Openweathermap server or network error. Status code: " + response.getStatusCode()); // TODO добавить обработку ошибки
-                        }))
-                        .body(WeatherDto.class)
-            );
+            WeatherDto weather = getWeather(location);
+            weathers.add(weather);
         }
         return weathers;
+    }
+
+    private WeatherDto getWeather(Location location) {
+        String uri = baseUrl + weatherUrl.formatted(location.getLatitude(), location.getLongitude(), apiKey);
+        WeatherDto weather = restClient.get()
+                .uri(uri)
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .onStatus(HttpStatus.UNAUTHORIZED::equals, (request, response) -> {
+                    throw new OpenWeatherUnauthorizedException(
+                            "Please write proper API key for Openweathermap service");}) // TODO добавить обработку ошибки
+                .onStatus(status -> status.is4xxClientError() || status.is5xxServerError()
+                        , ((request, response) -> { throw new OpenWeatherException(
+                                "Openweathermap server or network error. Status code: " + response.getStatusCode());})) // TODO добавить обработку ошибки
+                .body(WeatherDto.class);
+
+        if (weather == null) {
+            throw new OpenWeatherException("Openweathermap error. Cannot get weather data");
+        }
+
+        weather.setLocationName(location.getName());
+        weather.setLocationId(location.getId());
+
+        return weather;
     }
 }

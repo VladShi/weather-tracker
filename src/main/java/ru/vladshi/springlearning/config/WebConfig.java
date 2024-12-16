@@ -128,6 +128,11 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Bean
     public RestClient restClient() {
-        return RestClient.create();
+        return RestClient.create(); // TODO timeout ?
+//        var httpRequestFactory = new HttpComponentsClientHttpRequestFactory();
+//        httpRequestFactory.setConnectionRequestTimeout(7000);
+//        return RestClient.builder()
+//                .requestFactory(httpRequestFactory)
+//                .build();
     }
 }

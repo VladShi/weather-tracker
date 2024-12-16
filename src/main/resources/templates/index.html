@@ -3,12 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <title>index page</title>
+    <style>
+        .bordered {
+            border: 1px solid black;
+            padding: 5px;
+            margin: 5px;
+            display: inline-block;
+        }
+    </style>
 </head>
 <body>
+<div th:if="${user == null}"><a th:href="@{/login}">log in</a></div>
+
 <div th:if="${user != null}">
     Привет, <span th:text="${user.getLogin()}"/>. <a th:href="@{/logout}">log out</a>
+
+    <form th:action="@{/locations}" th:method="get">
+        <div>
+            <label for="location-name">Enter the name of the location:</label>
+            <input type="text" th:name="location-name" id="location-name" required/>
+        </div>
+        <br>
+        <button type="submit">Find</button>
+    </form>
+</div>
+<br>
+<div th:each="weather : ${weathersForUser}">
+    <div class="bordered">
+        Name of location: <span th:text="${weather.getLocationName()}"/><br>
+        Temperature: <span th:text="${weather.getTemperature()}"/><br>
+
+        <form th:action="@{/remove-location}" method="post" style="display:inline;">
+            <input type="hidden" th:name="location-id" th:value="${weather.getLocationId()}"/>
+            <button type="submit">Remove</button>
+        </form>
+
+    </div>
 </div>
 
-<div th:if="${user == null}"><a th:href="@{/login}">log in</a></div>
 </body>
 </html>

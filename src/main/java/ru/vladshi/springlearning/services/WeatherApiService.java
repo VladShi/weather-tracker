@@ -10,7 +10,7 @@ public interface WeatherApiService {
 
     List<LocationDto> getLocationsByName(String geoName, int userMaxLocations);
 
-    List<LocationDto> getLocationsByName(String geoName);
+    List<LocationDto> getLocationsByName(String locationName);
 
     List<WeatherDto> getWeathers(List<Location> locations);
 }

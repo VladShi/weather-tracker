@@ -5,7 +5,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import ru.vladshi.springlearning.entities.User;
 import ru.vladshi.springlearning.services.UserManagementService;
@@ -26,12 +25,12 @@ public class IndexPageController extends BaseController {
 
     @GetMapping()
     public String index(@CookieValue(value = SESSION_COOKIE_NAME, required = false) String sessionId,
-                        @ModelAttribute(USER_ATTRIBUTE) User user,
                         Model model) {
 
-        userManagementService.authenticate(user, sessionId);
+        User authUser = userManagementService.authenticate(sessionId);
 
-        model.addAttribute(WEATHERS_LIST_ATTRIBUTE, weatherApiService.getWeathers(user.getLocations()));
+        model.addAttribute(USER_ATTRIBUTE, authUser);
+        model.addAttribute(WEATHERS_LIST_ATTRIBUTE, weatherApiService.getWeathers(authUser.getLocations()));
 
         return INDEX_PAGE_VIEW;
     }

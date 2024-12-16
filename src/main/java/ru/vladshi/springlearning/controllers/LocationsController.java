@@ -26,11 +26,11 @@ public class LocationsController extends BaseController {
     @GetMapping(LOCATIONS_ROUTE)
     public String searchLocation(@CookieValue(value = SESSION_COOKIE_NAME, required = false) String sessionId,
                                  @RequestParam("location-name") String locationName,
-                                 @ModelAttribute(USER_ATTRIBUTE) User user,
                                  Model model) {
 
-        userManagementService.authenticate(user, sessionId); // TODO подумать сделать так что бы authenticate возвращал user, вместо того что бы принимать и внутри копировать поля
+        User authUser = userManagementService.authenticate(sessionId);
 
+        model.addAttribute(USER_ATTRIBUTE, authUser);
         model.addAttribute(LOCATIONS_ATTRIBUTE, weatherApiService.getLocationsByName(locationName));
 
         return LOCATIONS_VIEW; // TODO подумать о том что бы все константы передавать во view
@@ -38,24 +38,22 @@ public class LocationsController extends BaseController {
 
     @PostMapping(LOCATIONS_ROUTE)
     public String saveLocationForUser(@CookieValue(value = SESSION_COOKIE_NAME, required = false) String sessionId,
-                                      @ModelAttribute(USER_ATTRIBUTE) User user,
                                       @ModelAttribute(LOCATION_ATTRIBUTE) LocationDto locationDto) {
 
-        userManagementService.authenticate(user, sessionId);
+        User authUser = userManagementService.authenticate(sessionId);
 
-        locationService.addLocationToUser(user, DtoMapper.toEntity(locationDto));
+        locationService.addLocationToUser(authUser, DtoMapper.toEntity(locationDto));
 
         return REDIRECT_INDEX_PAGE;
     }
 
     @PostMapping(REMOVE_LOCATION_ROUTE)
     public String removeLocationFromUser(@CookieValue(value = SESSION_COOKIE_NAME, required = false) String sessionId,
-                                         @RequestParam("location-id") int locationId,
-                                         @ModelAttribute(USER_ATTRIBUTE) User user) {
+                                         @RequestParam("location-id") int locationId) {
 
-        userManagementService.authenticate(user, sessionId);
+        User authUser = userManagementService.authenticate(sessionId);
 
-        locationService.removeLocationFromUser(user, locationId);
+        locationService.removeLocationFromUser(authUser, locationId);
 
         return REDIRECT_INDEX_PAGE;
     }

@@ -22,8 +22,10 @@ public class LocationDaoImpl implements LocationDao {
     @Override
     public Optional<Location> find(Location location) {
         Session session = sessionFactory.getCurrentSession();
+        String hql = "from Location where name = :name and latitude = :lat and longitude = :lon";
 
-        return session.createQuery("from Location where latitude = :lat and longitude = :lon", Location.class)
+        return session.createQuery(hql, Location.class)
+                .setParameter("name", location.getName())
                 .setParameter("lat", location.getLatitude())
                 .setParameter("lon", location.getLongitude())
                 .uniqueResultOptional();

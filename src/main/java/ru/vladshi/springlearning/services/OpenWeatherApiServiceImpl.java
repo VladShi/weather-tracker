@@ -93,7 +93,7 @@ public class OpenWeatherApiServiceImpl implements WeatherApiService {
             throw new OpenWeatherException("Openweathermap error. Cannot get weather data");
         }
 
-        weather.setLocationName(location.getName());  // TODO решение с разными именами в телеге. Изменить unique constraint на координаты + название
+        weather.setLocationName(location.getName());
         weather.setLocationId(location.getId());
 
         return weather;

@@ -27,7 +27,7 @@
 
         </createTable>
 
-        <addUniqueConstraint tableName="location" columnNames="latitude, longitude"/>
+        <addUniqueConstraint tableName="location" columnNames="name, latitude, longitude"/>
 
     </changeSet>
 

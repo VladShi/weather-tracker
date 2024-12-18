@@ -1,18 +1,20 @@
 package ru.vladshi.springlearning.entities;
 
 import jakarta.persistence.*;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
 
 @Entity
-@Data
 @NoArgsConstructor
-@Table(name = "location", uniqueConstraints = {@UniqueConstraint(columnNames = {"latitude", "longitude"})})
+@Setter @Getter
+@EqualsAndHashCode(exclude = {"id", "users"})
+@Table(name = "location", uniqueConstraints = {@UniqueConstraint(columnNames = {"name", "latitude", "longitude"})})
 public class Location {
 
     @Id
@@ -21,7 +23,6 @@ public class Location {
     private int id;
 
     @Column(name = "name", nullable = false)
-    @EqualsAndHashCode.Exclude
     private String name;
 
     @Column(name = "latitude", nullable = false, precision = 10, scale = 7)
@@ -31,7 +32,6 @@ public class Location {
     private BigDecimal longitude;
 
     @ManyToMany(mappedBy = "locations")
-    @EqualsAndHashCode.Exclude
     private List<User> users;
 
     public void setLatitude(BigDecimal latitude) {

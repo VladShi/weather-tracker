@@ -32,7 +32,7 @@ public class LocationsController extends BaseController {
         User authUser = userManagementService.authenticate(sessionId);
         model.addAttribute(USER_ATTRIBUTE, authUser);
 
-        if(!checkIsValid(locationName)) {
+        if(!checkIsValid(locationName)) { // TODO возвращать ошибки разные и заменить как-то + и пробелы на - и добавить во вью вывод ошибок валидации
             model.addAttribute(ERROR_MESSAGE_ATTRIBUTE, "The location name must be from 2 to 40"
                     + " english or russian letters and may contain a dash '-' character.");
             return LOCATIONS_VIEW;

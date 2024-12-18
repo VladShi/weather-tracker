@@ -7,7 +7,6 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.vladshi.springlearning.dao.UserDao;
 import ru.vladshi.springlearning.entities.User;
 import ru.vladshi.springlearning.entities.UserSession;
-import ru.vladshi.springlearning.exceptions.AuthenticationFailedException;
 import ru.vladshi.springlearning.exceptions.InvalidCredentialsException;
 import ru.vladshi.springlearning.exceptions.UserAlreadyExistsException;
 
@@ -51,12 +50,9 @@ public class UserManagementServiceImpl implements UserManagementService {
     }
 
     @Override
-    public User authenticate(String sessionId) {
+    public Optional<User> authenticate(String sessionId) {
         Optional<UserSession> userSessionOptional = userSessionsService.getById(sessionId);
-        if (userSessionOptional.isEmpty()) {
-            throw new AuthenticationFailedException("Session with id " + sessionId + " not found");
-        }
-        return userSessionOptional.get().getUser();
+        return userSessionOptional.map(UserSession::getUser);
     }
 
     private User createUserCopyWithHashedPassword(User originalUser) {

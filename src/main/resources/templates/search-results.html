@@ -52,7 +52,7 @@
                             <p class="card-text mb-1">Longitude: <span th:text="${location.getLon()}"/></p>
                             <p class="card-text mb-1">Country: <span th:text="${location.getCountry()}"/></p>
                             <p class="card-text mb-3">State: <span th:text="${location.getState()}"/></p>
-                            <div th:if="${user != null}" class="mt-auto">
+                            <div class="mt-auto">
                                 <form th:action="@{/locations}" method="post" th:object="${location}">
                                     <input type="hidden" th:name="name" th:value="${location.getName()}"/>
                                     <input type="hidden" th:name="country" th:value="${location.getCountry()}"/>

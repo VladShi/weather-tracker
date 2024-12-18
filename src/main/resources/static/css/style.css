@@ -1,5 +1,11 @@
 body {
     min-height: 100vh;
+    background-color: #343a40; /* Dark background */
+    color: #e6e6e6; /* Light text */
+}
+
+footer.d-flex.flex-wrap.justify-content-between.align-items-center.py-3.mt-4.border-top {
+    border-top-color: #212529 !important;
 }
 
 section#page-content {
@@ -9,6 +15,18 @@ section#page-content {
 .weather-card .weather-card-delete-form {
     top: 8px;
     right: 8px;
+}
+
+.card {
+    background-color: #dfe2e5; /* Темный фон */
+    /*color: #f8f9fa; !* Светлый текст *!*/
+    color: black;
+}
+
+.weather-card {
+    background-color: lightblue; /* Темный фон */
+    /*color: #f8f9fa; !* Светлый текст *!*/
+    color: black;
 }
 
 .weather-card img {
@@ -27,4 +45,43 @@ section#page-content {
 
 .location-search-input-group .clear-input-button {
     border-color: rgb(222, 226, 230);
+    background-color: lightgray;
+    color: darkgray;
+}
+
+.navbar.navbar-light.bg-light {
+    background-color: #212529 !important; /* Darker background for navbar */
+}
+
+.navbar-brand {
+    color: #e6e6e6; /* Светлый текст */
+}
+
+.navbar-brand:hover {
+    color: #ffffff; /* Еще более светлый текст при наведении */
+}
+
+.navbar-text {
+    color: #e6e6e6; /* Светлый текст */
+}
+
+.btn-outline-success {
+    color: lightgreen !important;
+}
+
+.btn-primary {
+    background-color: #2c2ca5;
+    color: #e6e6e6;
+    border-color: #262691;
+}
+
+input.form-control {
+    background-color: #dfe2e5; /* Мягкий серый фон */
+    color: #212529; /* Темный текст */
+    /*border: 1px solid #ced4da; !* Граница *!*/
+}
+
+/* Стили для элементов <input> при фокусе */
+input.form-control:focus {
+    background-color: #e9ecef; /* Светлый фон при фокусе */
 }

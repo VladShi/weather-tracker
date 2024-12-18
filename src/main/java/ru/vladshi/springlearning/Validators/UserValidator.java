@@ -20,27 +20,21 @@ public final class UserValidator {
         validate(user, LOGIN);
     }
 
-    private static void validate(User user, String action) {
+    private static void validate(User user, String action) { // TODO изменить валидацию. Сделать не с помощью глобального перехватчика. Может быть возвращать какую-то, которую проверить потом в контроллере и передавать в модель
         ////// login validation //////
-        String login = user.getLogin();
+        String login = user.getLogin(); //
 
-        if (login == null || login.isEmpty()) {
-            throwUserValidationExceptionByAction(action,"Login is required");
-        }
-
-        if (login.length() < 4 || login.length() > 30) {
-            throwUserValidationExceptionByAction(action,"Login length must be between 4 and 30 characters");
+        if (login == null || !login.matches("^[a-zA-Z0-9-@._]{4,30}$")) {
+            throwUserValidationExceptionByAction(action,"The username must be from 4 to 30 " +
+                    "english letters and may contain digits, symbol '@', dots '.', underscores '_' and hyphens '-'.");
         }
 
         ////// password validation //////
         String password = user.getPassword();
 
-        if (password == null || password.isEmpty()) {
-            throwUserValidationExceptionByAction(action,"Password is required");
-        }
-
-        if (password.length() < 6 || password.length() > 16) {
-            throwUserValidationExceptionByAction(action,"Password length must be between 6 and 20 characters");
+        if (password == null || !password.matches("^[a-zA-Z0-9-!]{6,20}$")) {
+            throwUserValidationExceptionByAction(action,"The password must be from 6 to 20 " +
+                    "english letters and digits");
         }
     }
 

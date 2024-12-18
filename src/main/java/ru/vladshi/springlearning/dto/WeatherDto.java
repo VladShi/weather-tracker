@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.math.BigDecimal;
+import java.util.List;
 
 @Setter @Getter
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -20,13 +20,78 @@ public class WeatherDto {
     @JsonProperty("main")
     private Main main;
 
+    @JsonProperty("weather")
+    private List<Weather> weather;
+
+    @JsonProperty("sys")
+    private LocationInfo locationInfo;
+
     @Setter @Getter
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Main {
-        private BigDecimal temp;
+        private float temp;
+        @JsonProperty("feels_like")
+        private float feelsLike;
+        private int humidity;
     }
 
-    public BigDecimal getTemperature() {
-        return main != null ? main.getTemp() : BigDecimal.ZERO;
+    @Setter @Getter
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class Weather {
+        private String description;
+        private String icon;
+    }
+
+    @Setter @Getter
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class LocationInfo {
+        @JsonProperty("country")
+        private String countryCode;
+    }
+
+    public String getTemperature() {
+        if (main == null) {
+            return "";
+        }
+        int temp = Math.round(main.getTemp());
+        return String.format("%s%s", temp > 0 ? "+": "", temp);
+    }
+
+    public String getFeelsLike() {
+        if (main == null) {
+            return "";
+        }
+        int temp = Math.round(main.getFeelsLike());
+        return String.format("%s%s", temp > 0 ? "+" : "", temp);
+    }
+
+    public String getHumidity() {
+        if (main == null) {
+            return "";
+        }
+        return String.valueOf(main.getHumidity());
+    }
+
+    public String getSkyInfo() {
+        if (weather == null) {
+            return "";
+        }
+        String info = weather.getFirst().getDescription();
+        char firstChar = Character.toUpperCase(info.charAt(0));
+        return firstChar + info.substring(1);
+    }
+
+    public String getIconName() {
+        if (weather == null) {
+            return "";
+        }
+        return weather.getFirst().getIcon();
+    }
+
+    public String getCountryCode() {
+        if (locationInfo == null) {
+            return "";
+        }
+        return locationInfo.getCountryCode();
     }
 }

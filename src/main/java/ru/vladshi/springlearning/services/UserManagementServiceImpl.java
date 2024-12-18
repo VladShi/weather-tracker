@@ -26,7 +26,7 @@ public class UserManagementServiceImpl implements UserManagementService {
 
         Optional<User> existingUserOptional = userDao.findByLogin(requestedUser.getLogin());
         if (existingUserOptional.isEmpty()) {
-            throw new InvalidCredentialsException("User with login " + requestedUser.getLogin() + " not found");
+            throw new InvalidCredentialsException("Username: '" + requestedUser.getLogin() + "' not found");
         }
         User existingUser = existingUserOptional.get();
 

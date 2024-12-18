@@ -70,12 +70,12 @@ public class GlobalExceptionHandler {
         return ERROR_500_VIEW;
     }
 
-    @ExceptionHandler(Exception.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public String handleGeneralException(Exception ex) {
-        // логирование и отправка оповещения кому-надо
-        return ERROR_500_VIEW;
-    }
+//    @ExceptionHandler(Exception.class)
+//    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+//    public String handleGeneralException(Exception ex) {
+//        // логирование и отправка оповещения кому-надо
+//        return ERROR_500_VIEW;
+//    }
 
     private ModelAndView createErrorMessageWithUserModelAndView(String viewName, String errorMessage) {
         ModelAndView modelAndView = new ModelAndView(viewName);

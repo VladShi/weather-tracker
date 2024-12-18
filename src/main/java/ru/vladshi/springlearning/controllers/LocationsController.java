@@ -26,7 +26,7 @@ public class LocationsController extends BaseController {
 
     @GetMapping(LOCATIONS_ROUTE)
     public String searchLocation(@CookieValue(value = SESSION_COOKIE_NAME, required = false) String sessionId,
-                                 @RequestParam("location-name") String locationName,
+                                 @RequestParam(value = "location-name", required = false) String locationName,
                                  Model model) {
 
         User authUser = userManagementService.authenticate(sessionId);

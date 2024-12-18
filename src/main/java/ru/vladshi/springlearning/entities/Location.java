@@ -6,6 +6,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 
 @Entity
@@ -20,6 +21,7 @@ public class Location {
     private int id;
 
     @Column(name = "name", nullable = false)
+    @EqualsAndHashCode.Exclude
     private String name;
 
     @Column(name = "latitude", nullable = false, precision = 10, scale = 7)
@@ -31,4 +33,12 @@ public class Location {
     @ManyToMany(mappedBy = "locations")
     @EqualsAndHashCode.Exclude
     private List<User> users;
+
+    public void setLatitude(BigDecimal latitude) {
+        this.latitude = latitude.setScale(7, RoundingMode.HALF_UP);
+    }
+
+    public void setLongitude(BigDecimal longitude) {
+        this.longitude = longitude.setScale(7, RoundingMode.HALF_UP);
+    }
 }

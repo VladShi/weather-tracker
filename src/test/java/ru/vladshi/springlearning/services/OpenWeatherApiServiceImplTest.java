@@ -19,9 +19,8 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 @WireMockTest
 class OpenWeatherApiServiceImplTest {
@@ -165,8 +164,13 @@ class OpenWeatherApiServiceImplTest {
 
         assertEquals(1, weathers.size());
         WeatherDto weather = weathers.get(0);
-        assertEquals("Moscow", weather.getLocationName());
-        assertEquals(new BigDecimal("-3.88"), weather.getTemperature());
+        assertNull(weather.getLocationName());
+        assertEquals("-4", weather.getTemperature());
+        assertEquals("-9", weather.getFeelsLike());
+        assertEquals("70", weather.getHumidity());
+        assertEquals("Clouds", weather.getSkyInfo());
+        assertEquals("04d", weather.getIconName());
+        assertEquals("RU", weather.getCountryCode());
         // Добавь дополнительные проверки для других полей, если это необходимо
     }
 

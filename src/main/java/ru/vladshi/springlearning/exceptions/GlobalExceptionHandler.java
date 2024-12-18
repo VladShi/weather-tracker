@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.servlet.ModelAndView;
-import ru.vladshi.springlearning.entities.User;
+import ru.vladshi.springlearning.dto.UserDto;
 
 import static ru.vladshi.springlearning.constants.ModelAttributeConstants.*;
 import static ru.vladshi.springlearning.constants.RouteConstants.*;
@@ -28,25 +28,19 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(UserAlreadyExistsException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public ModelAndView handleUserAlreadyExistsException(UserAlreadyExistsException ex) {
-        return createErrorMessageWithUserModelAndView(REGISTER_VIEW, ex.getMessage());
+        return createModelAndViewWithErrorMessageAndUserDto(REGISTER_VIEW, LOGIN_ERROR_ATTRIBUTE, ex.getMessage());
     }
 
-    @ExceptionHandler(UserValidationOnRegisterException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ModelAndView handleUserValidationOnRegister(UserValidationOnRegisterException ex) {
-        return createErrorMessageWithUserModelAndView(REGISTER_VIEW, ex.getMessage());
-    }
-
-    @ExceptionHandler(UserValidationOnLogInException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ModelAndView handleUserValidationOnLogIn(UserValidationOnLogInException ex) {
-        return createErrorMessageWithUserModelAndView(LOGIN_VIEW, ex.getMessage());
-    }
-
-    @ExceptionHandler(InvalidCredentialsException.class)
+    @ExceptionHandler(UserLoginNotFoundException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public ModelAndView handleInvalidCredentials(InvalidCredentialsException ex) {
-        return createErrorMessageWithUserModelAndView(LOGIN_VIEW, ex.getMessage());
+    public ModelAndView handleUserLoginNotFoundException(UserLoginNotFoundException ex) {
+        return createModelAndViewWithErrorMessageAndUserDto(LOGIN_VIEW, LOGIN_ERROR_ATTRIBUTE, ex.getMessage());
+    }
+
+    @ExceptionHandler(InvalidUserPasswordException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ModelAndView handleInvalidUserPasswordException(InvalidUserPasswordException ex) {
+        return createModelAndViewWithErrorMessageAndUserDto(LOGIN_VIEW, PASSWORD_ERROR_ATTRIBUTE, ex.getMessage());
     }
 
     @ExceptionHandler(OpenWeatherUnauthorizedException.class)
@@ -77,10 +71,12 @@ public class GlobalExceptionHandler {
 //        return ERROR_500_VIEW;
 //    }
 
-    private ModelAndView createErrorMessageWithUserModelAndView(String viewName, String errorMessage) {
+    private ModelAndView createModelAndViewWithErrorMessageAndUserDto(String viewName,
+                                                                      String errorAttribute,
+                                                                      String errorMessage) {
         ModelAndView modelAndView = new ModelAndView(viewName);
-        modelAndView.addObject(ERROR_MESSAGE_ATTRIBUTE, errorMessage);
-        modelAndView.addObject(USER_ATTRIBUTE, new User());
+        modelAndView.addObject(errorAttribute, errorMessage);
+        modelAndView.addObject(USER_ATTRIBUTE, new UserDto());
         return modelAndView;
     }
 }

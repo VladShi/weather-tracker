@@ -5,17 +5,22 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import ru.vladshi.springlearning.dto.UserDto;
 import ru.vladshi.springlearning.entities.User;
 import ru.vladshi.springlearning.entities.UserSession;
 import ru.vladshi.springlearning.exceptions.UserIsAlreadyAuthenticatedException;
 import ru.vladshi.springlearning.exceptions.AuthenticationFailedException;
+import ru.vladshi.springlearning.mappers.DtoMapper;
 import ru.vladshi.springlearning.services.UserManagementService;
 import ru.vladshi.springlearning.services.UserSessionsService;
 import ru.vladshi.springlearning.Validators.UserValidator;
+
+import java.util.Map;
 
 import static ru.vladshi.springlearning.constants.ModelAttributeConstants.*;
 import static ru.vladshi.springlearning.constants.RouteConstants.*;
@@ -39,7 +44,7 @@ public class UserManagementController extends BaseController {
 
     @GetMapping(REGISTER_ROUTE)
     public String showRegisterForm(@CookieValue(value = SESSION_COOKIE_NAME, required = false) String sessionId,
-                                   @ModelAttribute(USER_ATTRIBUTE) User user) {
+                                   @ModelAttribute(USER_ATTRIBUTE) UserDto userDto) {
 
         checkUserIsNotAuthenticated(sessionId);
         return REGISTER_VIEW;
@@ -47,11 +52,19 @@ public class UserManagementController extends BaseController {
 
     @PostMapping(REGISTER_ROUTE)
     public String registerUser(@CookieValue(value = SESSION_COOKIE_NAME, required = false) String sessionId,
-                               @ModelAttribute(USER_ATTRIBUTE) User user,
+                               @ModelAttribute(USER_ATTRIBUTE) UserDto userDto,
+                               Model model,
                                HttpServletResponse response) {
 
         checkUserIsNotAuthenticated(sessionId);
-        UserValidator.validateOnRegister(user);
+
+        Map<String, String> validationErrors = UserValidator.onRegister(userDto);
+        if (!validationErrors.isEmpty()) {
+            model.addAllAttributes(validationErrors);
+            return REGISTER_VIEW;
+        }
+
+        User user = DtoMapper.toEntity(userDto);
         userManagementService.register(user);
         setSessionCookie(user, response);
 
@@ -60,7 +73,7 @@ public class UserManagementController extends BaseController {
 
     @GetMapping(LOGIN_ROUTE)
     public String showLoginForm(@CookieValue(value = SESSION_COOKIE_NAME, required = false) String sessionId,
-                                @ModelAttribute(USER_ATTRIBUTE) User user) {
+                                @ModelAttribute(USER_ATTRIBUTE) UserDto userDto) {
 
         checkUserIsNotAuthenticated(sessionId);
         return LOGIN_VIEW;
@@ -68,11 +81,19 @@ public class UserManagementController extends BaseController {
 
     @PostMapping(LOGIN_ROUTE)
     public String loginUser(@CookieValue(value = SESSION_COOKIE_NAME, required = false) String sessionId,
-                            @ModelAttribute(USER_ATTRIBUTE) User user,
+                            @ModelAttribute(USER_ATTRIBUTE) UserDto userDto,
+                            Model model,
                             HttpServletResponse response) {
 
         checkUserIsNotAuthenticated(sessionId);
-        UserValidator.validateOnLogIn(user);
+
+        Map<String, String> validationErrors = UserValidator.onLogIn(userDto);
+        if (!validationErrors.isEmpty()) {
+            model.addAllAttributes(validationErrors);
+            return LOGIN_VIEW;
+        }
+
+        User user = DtoMapper.toEntity(userDto);
         userManagementService.logIn(user);
         setSessionCookie(user, response);
 

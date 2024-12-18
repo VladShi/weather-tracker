@@ -1,48 +1,91 @@
 package ru.vladshi.springlearning.Validators;
 
-import ru.vladshi.springlearning.entities.User;
-import ru.vladshi.springlearning.exceptions.UserValidationOnLogInException;
-import ru.vladshi.springlearning.exceptions.UserValidationOnRegisterException;
+import ru.vladshi.springlearning.dto.UserDto;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import static ru.vladshi.springlearning.constants.ModelAttributeConstants.LOGIN_ERROR_ATTRIBUTE;
+import static ru.vladshi.springlearning.constants.ModelAttributeConstants.PASSWORD_ERROR_ATTRIBUTE;
 
 public final class UserValidator {
 
-    private static final String REGISTER = "register";
-    private static final String LOGIN = "login";
-
-    public UserValidator() {
+    private UserValidator() {
+        throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
     }
 
-    public static void validateOnRegister(User user) {
-        validate(user, REGISTER);
+    public static Map<String, String> onRegister(UserDto userDto) {
+        return validate(userDto, true);
     }
 
-    public static void validateOnLogIn(User user) {
-        validate(user, LOGIN);
+    public static Map<String, String> onLogIn(UserDto userDto) {
+        return validate(userDto, false);
     }
 
-    private static void validate(User user, String action) { // TODO изменить валидацию. Сделать не с помощью глобального перехватчика. Может быть возвращать какую-то, которую проверить потом в контроллере и передавать в модель
-        ////// login validation //////
-        String login = user.getLogin(); //
+    private static Map<String, String> validate(UserDto userDto, boolean checkPasswordMatches) {
 
-        if (login == null || !login.matches("^[a-zA-Z0-9-@._]{4,30}$")) {
-            throwUserValidationExceptionByAction(action,"The username must be from 4 to 30 " +
-                    "english letters and may contain digits, symbol '@', dots '.', underscores '_' and hyphens '-'.");
+        HashMap<String, String> validationErrors = new HashMap<>();
+
+        String loginError = checkLogin(userDto.getLogin());
+        if (!loginError.isEmpty()) {
+            validationErrors.put(LOGIN_ERROR_ATTRIBUTE, loginError);
         }
 
-        ////// password validation //////
-        String password = user.getPassword();
-
-        if (password == null || !password.matches("^[a-zA-Z0-9-!]{6,20}$")) {
-            throwUserValidationExceptionByAction(action,"The password must be from 6 to 20 " +
-                    "english letters and digits");
+        String passwordError = checkPassword(userDto.getPassword(), userDto.getConfirmPassword(), checkPasswordMatches);
+        if (!passwordError.isEmpty()) {
+            validationErrors.put(PASSWORD_ERROR_ATTRIBUTE, passwordError);
         }
+
+        return validationErrors;
     }
 
-    private static void throwUserValidationExceptionByAction(String action, String message) {
-        switch (action) {
-            case REGISTER -> throw new UserValidationOnRegisterException(message);
-            case LOGIN -> throw new UserValidationOnLogInException(message);
-            default -> throw new IllegalArgumentException("Invalid action: " + action);
+    private static String checkLogin(String login) {
+        if (isEmpty(login)) {
+            return "username is required";
         }
+        if (isLoginLengthInvalid(login)) {
+            return "username length must be between 4 and 24 characters";
+        }
+        if (isLoginFormatInvalid(login)) {
+            return "username may contain only english letters, digits and special characters from the set @.-_";
+        }
+        return "";
+    }
+
+    private static String checkPassword(String password, String confirmPassword, boolean checkPasswordMatches) {
+        if (isEmpty(password)) {
+            return "password is required";
+        }
+        if (isPasswordLengthInvalid(password)) {
+            return "password length must be between 6 and 20 characters";
+        }
+        if (isPasswordFormatInvalid(password)) {
+            return "password contains invalid characters. Password must contain " +
+                        "at least one english letter, one digit, and one special character from the set @$!%*?&";
+        }
+        if (checkPasswordMatches && !confirmPassword.equals(password)) {
+            return "password does not match repeated password";
+        }
+        return "";
+    }
+
+    private static boolean isPasswordFormatInvalid(String password) {
+        return !password.matches("^(?=.*[a-zA-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{6,}$");
+    }
+
+    private static boolean isPasswordLengthInvalid(String password) {
+        return password.length() < 6 || password.length() > 20;
+    }
+
+    private static boolean isLoginFormatInvalid(String login) {
+        return !login.matches("^[a-zA-Z0-9@._-]+$");
+    }
+
+    private static boolean isLoginLengthInvalid(String login) {
+        return login.length() < 4 || login.length() > 24;
+    }
+
+    private static boolean isEmpty(String string) {
+        return string == null || string.isBlank();
     }
 }

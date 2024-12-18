@@ -17,10 +17,10 @@
 
     <h2 class="text-center mb-5">Sign In</h2>
 
-    <div th:if="${errorMessage != null}" class="row justify-content-center">
+    <div th:if="${loginError != null || passwordError != null}" class="row justify-content-center">
         <div class="col-12 col-lg-4 col-md-6 col-sm-12">
             <div class="alert alert-danger" role="alert">
-                <span th:text="${errorMessage}"> error message </span>
+                Invalid username or password.
             </div>
         </div>
     </div>

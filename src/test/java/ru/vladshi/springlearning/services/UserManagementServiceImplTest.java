@@ -12,8 +12,9 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 import ru.vladshi.springlearning.config.WebConfig;
 import ru.vladshi.springlearning.entities.User;
-import ru.vladshi.springlearning.exceptions.InvalidCredentialsException;
+import ru.vladshi.springlearning.exceptions.InvalidUserPasswordException;
 import ru.vladshi.springlearning.exceptions.UserAlreadyExistsException;
+import ru.vladshi.springlearning.exceptions.UserLoginNotFoundException;
 
 import java.util.List;
 
@@ -94,7 +95,7 @@ class UserManagementServiceImplTest {
         User nonExistentUser = createTestUser("nonexistent", "password");
 
         // When & Then
-        assertThrows(InvalidCredentialsException.class, () -> userManagementService.logIn(nonExistentUser));
+        assertThrows(UserLoginNotFoundException.class, () -> userManagementService.logIn(nonExistentUser));
 
         // Check user absence in the database
         Session session = sessionFactory.getCurrentSession();
@@ -114,7 +115,7 @@ class UserManagementServiceImplTest {
 
         // When & Then
         User wrongPasswordUser = createTestUser(TEST_LOGIN, "wrongPassword");
-        assertThrows(InvalidCredentialsException.class,
+        assertThrows(InvalidUserPasswordException.class,
                 () -> userManagementService.logIn(wrongPasswordUser));
 
         // Database check

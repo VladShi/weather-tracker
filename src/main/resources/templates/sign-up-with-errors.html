@@ -17,10 +17,10 @@
 
     <h2 class="text-center mb-5">Sign Up</h2>
 
-    <div th:if="${errorMessage != null}" class="row justify-content-center">
+    <div th:if="${loginError != null || passwordError != null }" class="row justify-content-center">
         <div class="col-12 col-lg-4 col-md-6 col-sm-12">
             <div class="alert alert-danger" role="alert">
-                <span th:text="${errorMessage}"> error message</span>
+                Incorrect username or password!
             </div>
         </div>
     </div>
@@ -30,15 +30,28 @@
             <form class="mt-4" th:action="@{/register}" th:method="post" th:object="${user}">
                 <div class="mb-3">
                     <label for="username" class="form-label">Username</label>
-                    <div class="input-group">
-                        <input type="text" class="form-control" id="username" th:field="*{login}" required value=""/>
+                    <div class="input-group has-validation">
+                        <input type="text" class="form-control" id="username" th:field="*{login}" required value=""
+                               th:classappend="${loginError != null} ? 'is-invalid' : ''"/>
+                        <div th:if="${loginError != null}" class="invalid-feedback">
+                            <span th:text="${loginError}"/>
+                        </div>
                     </div>
                 </div>
                 <div class="mb-3">
                     <label for="password" class="form-label">Password</label>
-                    <div class="input-group">
-                        <input type="password" class="form-control" id="password" th:field="*{password}" required value=""/>
+                    <div class="input-group has-validation">
+                        <input type="password" class="form-control" id="password" th:field="*{password}" required
+                               value="" th:classappend="${passwordError != null} ? 'is-invalid' : ''"/>
+                        <div class="invalid-feedback">
+                            <span th:text="${passwordError}"/>
+                        </div>
                     </div>
+                </div>
+                <div class="mb-3">
+                    <label for="repeat-password" class="form-label">Repeat password</label>
+                    <input type="password" class="form-control" id="repeat-password" th:field="*{confirmPassword}"
+                           required value=""/>
                 </div>
 
                 <button type="submit" class="btn btn-primary w-100 mt-3">Sign Up</button>

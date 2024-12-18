@@ -168,7 +168,7 @@ class OpenWeatherApiServiceImplTest {
         assertEquals("-4", weather.getTemperature());
         assertEquals("-9", weather.getFeelsLike());
         assertEquals("70", weather.getHumidity());
-        assertEquals("Clouds", weather.getSkyInfo());
+        assertEquals("Overcast clouds", weather.getSkyInfo());
         assertEquals("04d", weather.getIconName());
         assertEquals("RU", weather.getCountryCode());
         // Добавь дополнительные проверки для других полей, если это необходимо

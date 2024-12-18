@@ -25,7 +25,7 @@ public class LocationServiceImpl implements LocationService {
     public void addLocationToUser(User user, Location location) {
         updateIdOrSave(location);
         addLocationToUserLocationsList(location, user);
-        userDao.merge(user);
+        userDao.merge(user); // TODO ограничить максимальное количество локаций для юзера
     }
 
     @Override

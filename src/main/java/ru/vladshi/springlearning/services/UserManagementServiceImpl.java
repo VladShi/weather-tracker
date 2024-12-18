@@ -7,8 +7,9 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.vladshi.springlearning.dao.UserDao;
 import ru.vladshi.springlearning.entities.User;
 import ru.vladshi.springlearning.entities.UserSession;
-import ru.vladshi.springlearning.exceptions.InvalidCredentialsException;
+import ru.vladshi.springlearning.exceptions.InvalidUserPasswordException;
 import ru.vladshi.springlearning.exceptions.UserAlreadyExistsException;
+import ru.vladshi.springlearning.exceptions.UserLoginNotFoundException;
 
 import java.util.Optional;
 
@@ -25,12 +26,12 @@ public class UserManagementServiceImpl implements UserManagementService {
 
         Optional<User> existingUserOptional = userDao.findByLogin(requestedUser.getLogin());
         if (existingUserOptional.isEmpty()) {
-            throw new InvalidCredentialsException("Username: '" + requestedUser.getLogin() + "' not found");
+            throw new UserLoginNotFoundException("username not found");
         }
         User existingUser = existingUserOptional.get();
 
         if (!checkPasswords(requestedUser, existingUser)) {
-            throw new InvalidCredentialsException("Invalid password for user " + requestedUser.getLogin());
+            throw new InvalidUserPasswordException("invalid password");
         }
 
         requestedUser.setId(existingUser.getId());
@@ -39,7 +40,7 @@ public class UserManagementServiceImpl implements UserManagementService {
     @Override
     public void register(User user) {
         if (isLoginTaken(user.getLogin())) {
-            throw new UserAlreadyExistsException("User with login " + user.getLogin() + " already exists");
+            throw new UserAlreadyExistsException("username already exists");
         }
 
         User userToSave = createUserCopyWithHashedPassword(user);

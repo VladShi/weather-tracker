@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import ru.vladshi.springlearning.Validators.LocationNameValidator;
 import ru.vladshi.springlearning.dto.LocationDto;
 import ru.vladshi.springlearning.entities.User;
 import ru.vladshi.springlearning.mappers.DtoMapper;
@@ -11,9 +12,9 @@ import ru.vladshi.springlearning.services.LocationService;
 import ru.vladshi.springlearning.services.UserManagementService;
 import ru.vladshi.springlearning.services.WeatherApiService;
 
+import java.util.List;
 import java.util.Optional;
 
-import static ru.vladshi.springlearning.Validators.LocationNameValidator.checkIsValid;
 import static ru.vladshi.springlearning.constants.ModelAttributeConstants.*;
 import static ru.vladshi.springlearning.constants.RouteConstants.*;
 import static ru.vladshi.springlearning.constants.ViewConstants.LOCATIONS_VIEW;
@@ -32,16 +33,22 @@ public class LocationsController extends BaseController {
                                  Model model) {
 
         Optional<User> userOptional = userManagementService.authenticate(sessionId);
-
         userOptional.ifPresent(user -> model.addAttribute(USER_ATTRIBUTE, user));
 
-        if(!checkIsValid(locationName)) { // TODO возвращать разный текст ошибок и заменить как-то + и пробелы на - и добавить во вью вывод ошибок валидации , видимо внутри getLocationsByName()
-            model.addAttribute(ERROR_MESSAGE_ATTRIBUTE, "The location name must be from 2 to 40"
-                    + " english or russian letters and may contain a dash '-' character.");
-            return LOCATIONS_VIEW;
+        String locationNameError = LocationNameValidator.validate(locationName);
+        if (locationNameError.isEmpty()) {
+
+            List<LocationDto> locations = weatherApiService.getLocationsByName(locationName);
+
+            if (locations.isEmpty()) {
+                locationNameError = "No locations with the specified name were found";
+            } else {
+                model.addAttribute(LOCATIONS_ATTRIBUTE, locations);
+            }
         }
 
-        model.addAttribute(LOCATIONS_ATTRIBUTE, weatherApiService.getLocationsByName(locationName));
+        model.addAttribute(ERROR_MESSAGE_ATTRIBUTE, locationNameError);
+        model.addAttribute(LOCATION_NAME_ATTRIBUTE, locationName);
 
         return LOCATIONS_VIEW; // TODO подумать о том что бы все константы передавать во view
     }
@@ -53,7 +60,7 @@ public class LocationsController extends BaseController {
         Optional<User> userOptional = userManagementService.authenticate(sessionId);
 
         if (userOptional.isPresent()) {
-            locationService.addLocationToUser(userOptional.get(), DtoMapper.toEntity(locationDto));
+            locationService.addLocationToUser(userOptional.get(), DtoMapper.toEntity(locationDto)); // TODO да есть уязвимость, надо перед сохранением проверять данные по внешнему api
         } else {
             return REDIRECT_LOGIN;
         }
@@ -63,7 +70,7 @@ public class LocationsController extends BaseController {
 
     @PostMapping(REMOVE_LOCATION_ROUTE)
     public String removeLocationFromUser(@CookieValue(value = SESSION_COOKIE_NAME, required = false) String sessionId,
-                                         @RequestParam("location-id") int locationId) {  // TODO проверить какая ошибка вылетает, если прислать пост запрос не с формы сайта, и с неподходящими данными
+                                         @RequestParam("location-id") int locationId) {  // TODO ошибка вылетает если прислать не цифру, возможно стоит принимать строку и валидировать её где-то самому
 
         Optional<User> userOptional = userManagementService.authenticate(sessionId);
 

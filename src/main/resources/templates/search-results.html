@@ -30,7 +30,8 @@
             <div class="d-flex my-4">
                 <div class="input-group location-search-input-group me-3">
                     <input class="form-control" type="text" th:name="location-name" placeholder="Enter location"
-                           value="San Francisco" required>
+                           required th:classappend="${errorMessage.isEmpty()} ? '' : 'is-invalid'"
+                           th:value="${locationName}">
                     <button class="btn btn-outline-secondary btn-sm clear-input-button" type="button"
                             onclick="this.previousElementSibling.value=''">
                         &times;
@@ -39,9 +40,13 @@
                 <button class="btn btn-outline-success" type="submit">Search</button>
             </div>
         </form>
-        // errors //
 
-        <div>
+        <br th:if="${errorMessage.isEmpty()}">
+        <div class="text-danger" th:if="${!errorMessage.isEmpty()}">
+            <span th:text="${errorMessage}"/>
+        </div>
+
+        <div th:if="${errorMessage.isEmpty()}">
             <h2>Locations:</h2>
             <div class="row">
                 <div th:each="location : ${locations}" class="col-12 col-lg-3 col-md-6 mb-4">

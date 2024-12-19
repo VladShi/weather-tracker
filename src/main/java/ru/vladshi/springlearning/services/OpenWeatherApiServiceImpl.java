@@ -15,6 +15,9 @@ import ru.vladshi.springlearning.entities.Location;
 import ru.vladshi.springlearning.exceptions.OpenWeatherException;
 import ru.vladshi.springlearning.exceptions.OpenWeatherUnauthorizedException;
 
+import java.net.URI;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,7 +42,10 @@ public class OpenWeatherApiServiceImpl implements WeatherApiService {
     @Override
     public List<LocationDto> getLocationsByName(String locationName, int userMaxLocations) { // TODO реализовать во вьюхе и контроллере работу с использованием userMaxLocations
         int maxLocations = (userMaxLocations > 0) ? userMaxLocations : defaultMaxLocations;
-        String uri = baseUrl + geocodingUrl.formatted(locationName, maxLocations, apiKey);
+        String encodedLocationName = URLEncoder.encode(locationName, StandardCharsets.UTF_8);
+
+        URI uri = URI.create(baseUrl + geocodingUrl.formatted(encodedLocationName, maxLocations, apiKey));
+
         return restClient.get()
                 .uri(uri)
                 .accept(MediaType.APPLICATION_JSON)

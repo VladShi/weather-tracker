@@ -6,7 +6,7 @@ import org.hibernate.SessionFactory;
 import org.springframework.stereotype.Component;
 import ru.vladshi.springlearning.entities.Location;
 
-import java.util.Optional;
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -19,15 +19,35 @@ public class LocationDaoImpl implements LocationDao {
         sessionFactory.getCurrentSession().persist(location);
     }
 
+//    @Override   // TODO удалить если не нужно
+//    public Optional<Location> find(Location location) {
+//        Session session = sessionFactory.getCurrentSession();
+//        String hql = "from Location where name = :name and latitude = :lat and longitude = :lon";
+//
+//        return session.createQuery(hql, Location.class)
+//                .setParameter("name", location.getName())
+//                .setParameter("lat", location.getLatitude())
+//                .setParameter("lon", location.getLongitude())
+//                .uniqueResultOptional();
+//    }
+
     @Override
-    public Optional<Location> find(Location location) {
+    public List<Location> findByName(String name) {
         Session session = sessionFactory.getCurrentSession();
-        String hql = "from Location where name = :name and latitude = :lat and longitude = :lon";
+        String hql = "from Location where name = :name";
 
         return session.createQuery(hql, Location.class)
-                .setParameter("name", location.getName())
-                .setParameter("lat", location.getLatitude())
-                .setParameter("lon", location.getLongitude())
-                .uniqueResultOptional();
+                .setParameter("name", name)
+                .list();
     }
+
+//    @Override // TODO удалить если не нужно
+//    public Optional<Location> findByName(String name) {
+//        Session session = sessionFactory.getCurrentSession();
+//        String hql = "from Location where name = :name";
+//
+//        return session.createQuery(hql, Location.class)
+//                .setParameter("name", name)
+//                .uniqueResultOptional();
+//    }
 }

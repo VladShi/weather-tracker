@@ -1,7 +1,6 @@
 package ru.vladshi.springlearning.entities;
 
 import jakarta.persistence.*;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,7 +12,6 @@ import java.util.List;
 @Entity
 @NoArgsConstructor
 @Setter @Getter
-@EqualsAndHashCode(exclude = {"id", "users"})
 @Table(name = "location", uniqueConstraints = {@UniqueConstraint(columnNames = {"name", "latitude", "longitude"})})
 public class Location {
 

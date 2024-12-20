@@ -30,7 +30,7 @@ public class LocationServiceImpl implements LocationService {
         validateLocationByWeatherApi(location);
         updateIdOrSave(location);
         addLocationToUserLocationsList(location, user);
-        userDao.merge(user); // TODO ограничить максимальное количество локаций для юзера
+        userDao.merge(user);
     }
 
     @Override

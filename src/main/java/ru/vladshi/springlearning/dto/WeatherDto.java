@@ -88,7 +88,7 @@ public class WeatherDto {
         return weather.getFirst().getIcon();
     }
 
-    public String getCountryCode() {  // TODO возможно стоит так же выводить инфо об области. Так как в одной стране могут быть населенные пункты с одинаковым названием
+    public String getCountryCode() {  // TODO возможно стоит так же выводить инфо об области. Так как в одной стране могут быть населенные пункты с одинаковым названием. Но в полученном json с погодой, нет инфо о state. Поэтому выход только добавлять в бд к location поле state, и оттуда добавлять в weatherDto перед представлением, как это происходит с name.
         if (locationInfo == null) {
             return "";
         }

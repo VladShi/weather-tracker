@@ -22,7 +22,7 @@ public class UserLocationDaoImpl implements UserLocationDao {
             .setParameter("locationId", locationId)
             .executeUpdate();
 
-        if (!checkIsLocationInUse(locationId, session)) {
+        if (!checkIsLocationInUse(locationId, session)) { // TODO перенести в сервис
             deleteLocationById(locationId, session);
         }
     }
@@ -34,7 +34,7 @@ public class UserLocationDaoImpl implements UserLocationDao {
         return checkQuery.getSingleResult();
     }
 
-    private static void deleteLocationById(int locationId, Session session) {
+    private static void deleteLocationById(int locationId, Session session) { // перенести в locationDao
         String deleteSql = "DELETE FROM location WHERE id = :locationId";
         session.createNativeMutationQuery(deleteSql)
             .setParameter("locationId", locationId)

@@ -1,6 +1,7 @@
 package ru.vladshi.springlearning.controllers;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -23,6 +24,9 @@ import static ru.vladshi.springlearning.constants.ViewConstants.LOCATIONS_VIEW;
 @RequiredArgsConstructor
 public class LocationsController extends BaseController {
 
+    @Value("${limit.user-locations}")
+    private int userLocationsLimit;
+
     private final UserManagementService userManagementService;
     private final WeatherApiService weatherApiService;
     private final LocationService locationService;
@@ -34,6 +38,12 @@ public class LocationsController extends BaseController {
 
         Optional<User> userOptional = userManagementService.authenticate(sessionId);
         userOptional.ifPresent(user -> model.addAttribute(USER_ATTRIBUTE, user));
+
+        if (hasUserReachedLocationsLimit(userOptional)) {
+            model.addAttribute(ERROR_MESSAGE_ATTRIBUTE,
+                    "The number of locations to save is limited. Delete any location before proceeding");
+            return LOCATIONS_VIEW;
+        }
 
         String locationNameError = LocationNameValidator.validate(locationName);
         if (locationNameError.isEmpty()) {
@@ -58,11 +68,12 @@ public class LocationsController extends BaseController {
                                       @ModelAttribute(LOCATION_ATTRIBUTE) LocationDto locationDto) {
 
         Optional<User> userOptional = userManagementService.authenticate(sessionId);
-
-        if (userOptional.isPresent()) {
-            locationService.addLocationToUser(userOptional.get(), DtoMapper.toEntity(locationDto));
-        } else {
+        if (userOptional.isEmpty()) {
             return REDIRECT_LOGIN;
+        }
+
+        if (!hasUserReachedLocationsLimit(userOptional)) {
+            locationService.addLocationToUser(userOptional.get(), DtoMapper.toEntity(locationDto));
         }
 
         return REDIRECT_INDEX_PAGE;
@@ -77,5 +88,9 @@ public class LocationsController extends BaseController {
         userOptional.ifPresent(user -> locationService.removeLocationFromUser(user, locationId));
 
         return REDIRECT_INDEX_PAGE;
+    }
+
+    private boolean hasUserReachedLocationsLimit(Optional<User> userOptional) {
+        return userOptional.map(user -> user.getLocations().size() >= userLocationsLimit).orElse(false);
     }
 }

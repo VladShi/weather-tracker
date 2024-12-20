@@ -28,4 +28,14 @@ public class LocationDaoImpl implements LocationDao {
                 .setParameter("name", name)
                 .list();
     }
+
+    @Override
+    public void deleteById(int locationId) {
+        Session session = sessionFactory.getCurrentSession();
+        String deleteSql = "DELETE FROM location WHERE id = :locationId";
+
+        session.createNativeMutationQuery(deleteSql)
+                .setParameter("locationId", locationId)
+                .executeUpdate();
+    }
 }

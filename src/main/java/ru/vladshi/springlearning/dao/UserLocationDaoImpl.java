@@ -3,7 +3,6 @@ package ru.vladshi.springlearning.dao;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.query.NativeQuery;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -21,23 +20,15 @@ public class UserLocationDaoImpl implements UserLocationDao {
             .setParameter("userId", userId)
             .setParameter("locationId", locationId)
             .executeUpdate();
-
-        if (!checkIsLocationInUse(locationId, session)) { // TODO перенести в сервис
-            deleteLocationById(locationId, session);
-        }
     }
 
-    private static Boolean checkIsLocationInUse(int locationId, Session session) {
+    @Override
+    public Boolean checkIsLocationInUse(int locationId) {
+        Session session = sessionFactory.getCurrentSession();
         String checkSql = "SELECT EXISTS (SELECT 1 FROM user_location WHERE location_id = :locationId)";
-        NativeQuery<Boolean> checkQuery = session.createNativeQuery(checkSql, Boolean.class);
-        checkQuery.setParameter("locationId", locationId);
-        return checkQuery.getSingleResult();
-    }
 
-    private static void deleteLocationById(int locationId, Session session) { // перенести в locationDao
-        String deleteSql = "DELETE FROM location WHERE id = :locationId";
-        session.createNativeMutationQuery(deleteSql)
-            .setParameter("locationId", locationId)
-            .executeUpdate();
+        return session.createNativeQuery(checkSql, Boolean.class)
+                .setParameter("locationId", locationId)
+                .getSingleResult();
     }
 }

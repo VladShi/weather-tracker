@@ -35,7 +35,12 @@ public class LocationServiceImpl implements LocationService {
 
     @Override
     public void removeLocationFromUser(User user, int locationId) {
+
         userLocationDao.deleteLocationFromUser(user.getId(), locationId);
+
+        if (!userLocationDao.checkIsLocationInUse(locationId)) {
+            locationDao.deleteById(locationId);
+        }
     }
 
     private void validateLocationByWeatherApi(Location requiredLocation) {

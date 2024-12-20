@@ -9,4 +9,6 @@ public interface LocationDao {
     void save(Location location);
 
     List<Location> findByName(String name);
+
+    void deleteById(int locationId);
 }

@@ -47,24 +47,22 @@ public class Location {
 
         // These rounding is necessary because on the external weather api, some locations have slightly different
         // coordinates when requested in different languages. Although in fact it is the same location.
-        latitude = latitude.setScale(3, RoundingMode.HALF_UP);
-        longitude = longitude.setScale(3, RoundingMode.HALF_UP);
+        var roundedLatitude = latitude.setScale(3, RoundingMode.HALF_UP);
+        var roundedLongitude = longitude.setScale(3, RoundingMode.HALF_UP);
 
-        location.latitude = location.latitude.setScale(3, RoundingMode.HALF_UP);
-        location.longitude = location.longitude.setScale(3, RoundingMode.HALF_UP);
+        var roundedLocationLatitude = location.latitude.setScale(3, RoundingMode.HALF_UP);
+        var roundedLocationLongitude = location.longitude.setScale(3, RoundingMode.HALF_UP);
 
-        return name.equals(location.name) && latitude.equals(location.latitude) && longitude.equals(location.longitude);
+        return name.equals(location.name)
+                && roundedLatitude.equals(roundedLocationLatitude) && roundedLongitude.equals(roundedLocationLongitude);
     }
 
     @Override
     public int hashCode() {
         int result = name.hashCode();
 
-        latitude = latitude.setScale(3, RoundingMode.HALF_UP);
-        longitude = longitude.setScale(3, RoundingMode.HALF_UP);
-
-        result = 31 * result + latitude.hashCode();
-        result = 31 * result + longitude.hashCode();
+        result = 31 * result + latitude.setScale(3, RoundingMode.HALF_UP).hashCode();
+        result = 31 * result + longitude.setScale(3, RoundingMode.HALF_UP).hashCode();
         return result;
     }
 }

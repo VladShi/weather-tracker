@@ -30,15 +30,14 @@ import static ru.vladshi.springlearning.constants.ViewConstants.*;
 public class UserManagementController extends BaseController {
 
     private final UserSessionsService userSessionsService;
-    private final UserManagementService userManagementService;
     private final int sessionCookieMaxAge;
 
     @Autowired
     public UserManagementController(UserSessionsService userSessionsService,
                                     UserManagementService userManagementService,
                                     @Value("${session.cookie.max-age-minutes:30}") int sessionCookieMaxAge) {
+        super(userManagementService);
         this.userSessionsService = userSessionsService;
-        this.userManagementService = userManagementService;
         this.sessionCookieMaxAge = sessionCookieMaxAge * 60;  // in seconds
     }
 

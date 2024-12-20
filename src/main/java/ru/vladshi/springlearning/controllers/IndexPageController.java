@@ -1,6 +1,6 @@
 package ru.vladshi.springlearning.controllers;
 
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CookieValue;
@@ -20,12 +20,16 @@ import static ru.vladshi.springlearning.constants.RouteConstants.*;
 import static ru.vladshi.springlearning.constants.ViewConstants.*;
 
 @Controller
-@RequiredArgsConstructor
 @RequestMapping(INDEX_PAGE_ROUTE)
 public class IndexPageController extends BaseController {
 
-    private final UserManagementService userManagementService;
     private final WeatherApiService weatherApiService;
+
+    @Autowired
+    public IndexPageController(UserManagementService userManagementService, WeatherApiService weatherApiService) {
+        super(userManagementService);
+        this.weatherApiService = weatherApiService;
+    }
 
     @GetMapping()
     public String index(@CookieValue(value = SESSION_COOKIE_NAME, required = false) String sessionId,

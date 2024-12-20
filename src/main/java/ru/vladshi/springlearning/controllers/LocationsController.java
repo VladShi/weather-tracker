@@ -1,6 +1,6 @@
 package ru.vladshi.springlearning.controllers;
 
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,15 +21,22 @@ import static ru.vladshi.springlearning.constants.RouteConstants.*;
 import static ru.vladshi.springlearning.constants.ViewConstants.LOCATIONS_VIEW;
 
 @Controller
-@RequiredArgsConstructor
 public class LocationsController extends BaseController {
 
-    @Value("${limit.user-locations}")
-    private int userLocationsLimit;
-
-    private final UserManagementService userManagementService;
+    private final int userLocationsLimit;
     private final WeatherApiService weatherApiService;
     private final LocationService locationService;
+
+    @Autowired
+    public LocationsController(UserManagementService userManagementService,
+                               WeatherApiService weatherApiService,
+                               LocationService locationService,
+                               @Value("${limit.user-locations}") int userLocationsLimit) {
+        super(userManagementService);
+        this.weatherApiService = weatherApiService;
+        this.locationService = locationService;
+        this.userLocationsLimit = userLocationsLimit;
+    }
 
     @GetMapping(LOCATIONS_ROUTE)
     public String searchLocation(@CookieValue(value = SESSION_COOKIE_NAME, required = false) String sessionId,

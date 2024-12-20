@@ -55,12 +55,12 @@ public class LocationsController extends BaseController {
 
     @PostMapping(LOCATIONS_ROUTE)
     public String saveLocationForUser(@CookieValue(value = SESSION_COOKIE_NAME, required = false) String sessionId,
-                                      @ModelAttribute(LOCATION_ATTRIBUTE) LocationDto locationDto) { // TODO проверить какая ошибка вылетает, если прислать пост запрос не с формы сайта, и с неподходящими данными
+                                      @ModelAttribute(LOCATION_ATTRIBUTE) LocationDto locationDto) {
 
         Optional<User> userOptional = userManagementService.authenticate(sessionId);
 
         if (userOptional.isPresent()) {
-            locationService.addLocationToUser(userOptional.get(), DtoMapper.toEntity(locationDto)); // TODO да есть уязвимость, надо перед сохранением проверять данные по внешнему api
+            locationService.addLocationToUser(userOptional.get(), DtoMapper.toEntity(locationDto));
         } else {
             return REDIRECT_LOGIN;
         }
@@ -70,7 +70,7 @@ public class LocationsController extends BaseController {
 
     @PostMapping(REMOVE_LOCATION_ROUTE)
     public String removeLocationFromUser(@CookieValue(value = SESSION_COOKIE_NAME, required = false) String sessionId,
-                                         @RequestParam("location-id") int locationId) {  // TODO ошибка вылетает если прислать не цифру, возможно стоит принимать строку и валидировать её где-то самому
+                                         @RequestParam("location-id") int locationId) {
 
         Optional<User> userOptional = userManagementService.authenticate(sessionId);
 

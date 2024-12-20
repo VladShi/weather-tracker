@@ -43,6 +43,13 @@ public class GlobalExceptionHandler {
         return createModelAndViewWithErrorMessageAndUserDto(LOGIN_VIEW, PASSWORD_ERROR_ATTRIBUTE, ex.getMessage());
     }
 
+    @ExceptionHandler(UnexpectedLocationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public String handleUnexpectedLocationException(UnexpectedLocationException ex) {
+        // логирование и отправка оповещения кому-надо
+        return ERROR_500_VIEW;
+    }
+
     @ExceptionHandler(OpenWeatherUnauthorizedException.class)
     @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
     public String handleOpenWeatherException(OpenWeatherUnauthorizedException ex) {

@@ -88,15 +88,15 @@ class OpenWeatherApiServiceImplTest {
 
         LocationDto moscowRU = result.get(0);
         assertEquals("Moscow", moscowRU.getName());
-        assertEquals(new BigDecimal("55.7558"), moscowRU.getLat());
-        assertEquals(new BigDecimal("37.6173"), moscowRU.getLon());
+        assertEquals(new BigDecimal("55.7558000"), moscowRU.getLat());
+        assertEquals(new BigDecimal("37.6173000"), moscowRU.getLon());
         assertEquals("RU", moscowRU.getCountry());
         assertEquals("Moscow City", moscowRU.getState());
 
         LocationDto moscowUS = result.get(1);
         assertEquals("Moscow", moscowUS.getName());
-        assertEquals(new BigDecimal("39.1031"), moscowUS.getLat());
-        assertEquals(new BigDecimal("-84.5120"), moscowUS.getLon());
+        assertEquals(new BigDecimal("39.1031000"), moscowUS.getLat());
+        assertEquals(new BigDecimal("-84.5120000"), moscowUS.getLon());
         assertEquals("US", moscowUS.getCountry());
         assertEquals("Ohio", moscowUS.getState());
     }

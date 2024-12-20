@@ -88,7 +88,7 @@ public class WeatherDto {
         return weather.getFirst().getIcon();
     }
 
-    public String getCountryCode() {
+    public String getCountryCode() {  // TODO возможно стоит так же выводить инфо об области. Так как в одной стране могут быть населенные пункты с одинаковым названием
         if (locationInfo == null) {
             return "";
         }

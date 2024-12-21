@@ -18,7 +18,7 @@ import ru.vladshi.springlearning.exceptions.AuthenticationFailedException;
 import ru.vladshi.springlearning.mappers.DtoMapper;
 import ru.vladshi.springlearning.services.UserManagementService;
 import ru.vladshi.springlearning.services.UserSessionsService;
-import ru.vladshi.springlearning.Validators.UserValidator;
+import ru.vladshi.springlearning.validators.UserValidator;
 
 import java.util.Map;
 

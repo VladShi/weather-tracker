@@ -1,4 +1,4 @@
-package ru.vladshi.springlearning.Validators;
+package ru.vladshi.springlearning.validators;
 
 import ru.vladshi.springlearning.dto.UserDto;
 

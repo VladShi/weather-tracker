@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import ru.vladshi.springlearning.Validators.LocationNameValidator;
+import ru.vladshi.springlearning.validators.LocationNameValidator;
 import ru.vladshi.springlearning.dto.LocationDto;
 import ru.vladshi.springlearning.entities.User;
 import ru.vladshi.springlearning.mappers.DtoMapper;

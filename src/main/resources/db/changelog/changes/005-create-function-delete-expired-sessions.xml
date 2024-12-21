@@ -7,6 +7,10 @@
 
     <changeSet id="005-create-function-delete-expired-sessions.xml" author="vladshi">
 
+        <preConditions onFail="MARK_RAN">
+            <dbms type="postgresql"/>
+        </preConditions>
+
         <createProcedure>
 
             <![CDATA[

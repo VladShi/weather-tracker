@@ -1,4 +1,4 @@
-package ru.vladshi.springlearning.Validators;
+package ru.vladshi.springlearning.validators;
 
 public class LocationNameValidator {
 

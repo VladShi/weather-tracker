@@ -7,6 +7,10 @@
 
     <changeSet id="006-create-trigger-delete-expired-sessions.xml" author="vladshi">
 
+        <preConditions onFail="MARK_RAN">
+            <dbms type="postgresql"/>
+        </preConditions>
+
         <createProcedure>
 
             CREATE TRIGGER delete_expired_sessions_trigger

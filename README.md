@@ -10,48 +10,181 @@
 Оглавление
 ----------
 
-1. [Реализация](#реализация)
-    * [Общие комментарии](#общие-комментарии)
-    * [Требования и запуск приложения](#требования-и-запуск-приложения)
-2. [Техническое задание](#техническое-задание)
-   *   [Что нужно знать](#что-нужно-знать)
-   *   [Мотивация проекта](#мотивация-проекта)
-   *   [Функционал приложения](#функционал-приложения)
-   *   [Интерфейс приложения](#интерфейс-приложения)
-       *   [Главная страница](#главная-страница)
-       *   [Страница результатов поиска локаций по названию](#страница-результатов-поиска-локаций-по-названию)
-       *   [Остальное](#остальное)
-   *   [Работа с сессиями и cookies](#работа-с-сессиями-и-cookies)
-   *   [Spring MVC](#spring-mvc)
-   *   [База данных](#база-данных)
-       *   [Таблица `Users`](#таблица-users)
-       *   [Таблица `Locations`](#таблица-locations)
-       *   [Таблица `Sessions`](#таблица-sessions)
-   *   [Получение информации о погоде с помощью 
-   OpenWeatherMap API](#получение-информации-о-погоде-с-помощью-openweathermap-api)
-       *   [OpenWeather](#openweather)
-       *   [Работа с API](#работа-с-api)
-       *   [Интеграция OpenWeather API с Java приложением](#интеграция-openweather-api-с-java-приложением)
-   *   [Тесты](#тесты)
-       *   [Интеграционные тесты сервисов по работе с пользователями
-       и сессиями](#интеграционные-тесты-сервисов-по-работе-с-пользователями-и-сессиями)
-       *   [Интеграционные тесты для сервиса по работе с 
-       OpenWeather API](#интеграционные-тесты-для-сервиса-по-работе-с-openweather-api)
-   *   [Деплой](#деплой)
-   *   [План работы над приложением](#план-работы-над-приложением)
+1. [Использованные инструменты / технологии](#использованные-инструменты--технологии)
+2. [Интерфейс приложения](#интерфейс-приложения)
+3. [Диаграмма базы данных](#диаграмма-базы-данных)
+4. [Требования приложения](#требования-приложения)
+5. [Инструкция по запуску приложения](#инструкция-по-запуску-приложения)
+6. [Техническое задание](#техническое-задание)
 
-Реализация
-----------
+## Использованные инструменты / технологии:
+
+### Backend
+
+![Java](https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=java&logoColor=ED8B00&labelColor=333333) &nbsp;
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=59b0ff&labelColor=333333) &nbsp;
+![Spring MVC](https://img.shields.io/badge/Spring_MVC-6DB33F?style=for-the-badge&logo=spring&logoColor=6DB33F&labelColor=333333) &nbsp;
+![Hibernate](https://img.shields.io/badge/Hibernate-59666C?style=for-the-badge&logo=hibernate&logoColor=edc9a5&labelColor=333333) &nbsp;
+![Maven](https://img.shields.io/badge/Maven-C71A36?style=for-the-badge&logo=apachemaven&logoColor=C71A36&labelColor=333333) &nbsp;
+![H2 Database](https://img.shields.io/badge/H2_Database-000000?style=for-the-badge&logo=h2&logoColor=000000&labelColor=333333) &nbsp;
+![Liquibase](https://img.shields.io/badge/Liquibase-2962FF?style=for-the-badge&logo=liquibase&logoColor=2962FF&labelColor=333333) &nbsp;
+![Lombok](https://img.shields.io/badge/Lombok-1A80C3?style=for-the-badge&logo=lombok&logoColor=1A80C3&labelColor=333333)
+
+### Testing
+
+![JUnit5](https://img.shields.io/badge/JUnit5-25A162?style=for-the-badge&logo=junit5&logoColor=25A162&labelColor=333333) &nbsp;
+![WireMock](https://img.shields.io/badge/WireMock-000000?style=for-the-badge&logo=wiremock&logoColor=000000&labelColor=333333)
+
+### Frontend
+
+![Thymeleaf](https://img.shields.io/badge/Thymeleaf-005F0F?style=for-the-badge&logo=thymeleaf&logoColor=005F0F&labelColor=333333) &nbsp;
+![HTML](https://img.shields.io/badge/HTML-E34F26?style=for-the-badge&logo=html5&logoColor=E34F26&labelColor=333333) &nbsp;
+![CSS](https://img.shields.io/badge/CSS-1572B6?style=for-the-badge&logo=css3&logoColor=1572B6&labelColor=333333) &nbsp;
+![Bootstrap](https://img.shields.io/badge/Bootstrap-7952B3?style=for-the-badge&logo=bootstrap&logoColor=7952B3&labelColor=333333)
+
+### API
+
+![OpenWeatherMap API](https://img.shields.io/badge/OpenWeatherMap_API-0078A8?style=for-the-badge&logo=openweathermap&logoColor=0078A8&labelColor=333333)
+
+## Интерфейс приложения
+
+### Главная страница
+![index-page](assets/index-page.png)
+
+URL - '/'
+- Можно увидеть все избранные локации с данными о погоде и удалить их. Удаление осуществляется POST-запросом по пути "/remove-location", с передачей location-id.
+- Навигационная панель:
+    - Отображает логин пользователя
+    - Выход: Отправляет GET-запрос на /logout для выхода пользователя. Удаляет куки, содержащее сессию пользователи.
+- Поиск: Отправляет GET-запрос на /locations?location-name=query, где query — это введенный пользователем поисковый запрос.
+
+### Страница поиска
+
+![search](assets/search.png)
+
+URL - '/locations'
+- Результат вашего поискового запроса. Вызов Geocoding API для определения долготы и широты.
+- Если нажать на "Add", то локация будет сохранена как избранное с POST-запросом на "/locations".
+
+### Страница входа
+
+![sign-in.png](assets/sign-in.png)
+
+URL - '/login'
+- Страница входа. POST-запрос на "/login" при нажатии на кнопку входа. Создает в базе данных id сессии и отправляет их в куки браузера пользователя.
+
+### Страница регистрации
+
+![sign-up.png](assets/sign-up.png)
+
+URL - '/register'
+- Страница регистрации. POST-запрос на "/register". Создает в базе данных id сессии и отправляет их в куки браузера пользователя, сохраняет ваш логин и зашифрованный пароль.
+
+### Страницы ошибок
+
+![error-page.png](assets/error-page.png)
+
+- Возникают, когда что-то пошло не так на сервере.
+
+## Диаграмма базы данных
+![database.png](assets/database.png)
+
+## Требования приложения
+
++ Java 21+
++ Apache Maven
++ Tomcat 10+
++ PosgreSQL
++ OpenWeather Api Key
+
+## Инструкция по запуску приложения
+
+### Клонирование репозитория
+
+1. **Клонирование репозитория с помощью Git**:
+    - Откройте терминал или командную строку.
+    - Выполните команду:
+      ```sh
+      git clone https://github.com/VladShi/weather-tracker.git
+      ```
+    - Перейдите в директорию проекта:
+      ```sh
+      cd weather-tracker
+      ```
+
+### Настройка проекта
+
+1. **Настройка конфигурационного файла**:
+    - В корне проекта находится файл `application.properties.origin`.
+    - Переименуйте этот файл в `application.properties`.
+    - Откройте файл `application.properties` и заполните его данными вашей базы данных и API ключом OpenWeatherMap. API ключ можно получить после регистрации по ссылке [https://openweathermap.org/](https://openweathermap.org/).
 
 
-### Общие комментарии
+### Сборка WAR-файла
 
+1. **Сборка с помощью Maven**:
+    - Откройте терминал или командную строку.
+    - Перейдите в корневую папку вашего проекта, где находится файл `pom.xml`.
+    - Запустите команду:
+      ```sh
+      mvn package
+      ```
+    - После успешного выполнения команды, WAR-файл будет создан в директории `/target` (например, `/target/weather-tracker-1.0.war`).
 
-### Требования и запуск приложения
+### Развертывание WAR-файла
 
+1. **Развертывание в Tomcat**:
+    - Откройте графический интерфейс Tomcat (Tomcat Manager).
+    - Перейдите в раздел `Deploy`.
+    - Выберите `WAR file to deploy`.
+    - Нажмите `Choose File` и выберите ваш WAR-файл (например, `weather-tracker-1.0.war`).
+    - Нажмите `Deploy`.
+
+### Запуск приложения в IntelliJ IDEA
+
+1. **Запуск приложения в IntelliJ IDEA**:
+    - Откройте проект в IntelliJ IDEA.
+    - Перейдите в меню `Run` и выберите `Edit Configurations`.
+    - В появившемся окне нажмите `+` и выберите `Tomcat Server`.
+    - Настройте конфигурацию Tomcat, указав путь к вашему WAR-файлу.
+    - Нажмите `Apply` и `OK`.
+    - Выберите созданную конфигурацию и нажмите `Run`.
+
+### Запуск приложения
+
+1. **Запуск Tomcat**:
+    - Убедитесь, что Tomcat запущен.
+    - Откройте браузер и перейдите по адресу `http://localhost:8080/weather-tracker-1.0` (или другому адресу, в зависимости от конфигурации вашего сервера).
 
 Техническое задание
 ==
+(данный проект делался на основе этого ТЗ)
+
+*   [Что нужно знать](#что-нужно-знать)
+*   [Мотивация проекта](#мотивация-проекта)
+*   [Функционал приложения](#функционал-приложения)
+*   [Интерфейс приложения](#интерфейс-приложения)
+    *   [Главная страница](#главная-страница)
+    *   [Страница результатов поиска локаций по названию](#страница-результатов-поиска-локаций-по-названию)
+    *   [Остальное](#остальное)
+*   [Работа с сессиями и cookies](#работа-с-сессиями-и-cookies)
+*   [Spring MVC](#spring-mvc)
+*   [База данных](#база-данных)
+    *   [Таблица `Users`](#таблица-users)
+    *   [Таблица `Locations`](#таблица-locations)
+    *   [Таблица `Sessions`](#таблица-sessions)
+*   [Получение информации о погоде с помощью
+    OpenWeatherMap API](#получение-информации-о-погоде-с-помощью-openweathermap-api)
+    *   [OpenWeather](#openweather)
+    *   [Работа с API](#работа-с-api)
+    *   [Интеграция OpenWeather API с Java приложением](#интеграция-openweather-api-с-java-приложением)
+*   [Тесты](#тесты)
+    *   [Интеграционные тесты сервисов по работе с пользователями
+        и сессиями](#интеграционные-тесты-сервисов-по-работе-с-пользователями-и-сессиями)
+    *   [Интеграционные тесты для сервиса по работе с
+        OpenWeather API](#интеграционные-тесты-для-сервиса-по-работе-с-openweather-api)
+*   [Деплой](#деплой)
+*   [План работы над приложением](#план-работы-над-приложением)
 
 Что нужно знать
 ---------------
